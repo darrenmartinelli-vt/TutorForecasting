@@ -1,102 +1,9 @@
-    <script type="module">
-        const XLSX = await import('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm');
-        
-        let seasonalityData = {};
-        let currentForecast = null;
-        
-        document.getElementById('fileInput').addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            document.getElementById('uploadSection').style.display = 'none';
-            document.getElementById('loadingSection').style.display = 'block';
-            
-            try {
-                const data = await file.arrayBuffer();
-                const workbook = XLSX.read(data);
-                
-                // Filter to Sales audiences (including InternationalCA)
-                const salesSheets = workbook.SheetNames.filter(name => 
-                    name.startsWith('Sales-') || name.startsWith('Sals-')
-                );
-                
-                if (salesSheets.length === 0) {
-                    alert('No Sales audience sheets found.');
-                    document.getElementById('loadingSection').style.display = 'none';
-                    document.getElementById('uploadSection').style.display = 'block';
-                    return;
-                }
-                
-                let totalSubjects = 0;
-                
-                // Load each Sales audience
-                salesSheets.forEach(sheetName => {
-                    const sheet = workbook.Sheets[sheetName];
-                    const sheetData = XLSX.utils.sheet_to_json(sheet);
-                    
-                    // Clean audience name
-                    let cleanName = sheetName.replace(/^Sales-|^Sals-/, '');
-                    
-                    // Rename InternationalCA to Canada International
-                    if (cleanName === 'InternationalCA') {
-                        cleanName = 'Canada International';
-                    }
-                    
-                    // Convert to month-keyed object
-                    const monthData = {};
-                    sheetData.forEach(row => {
-                        const month = row.Month;
-                        delete row.Month;
-                        monthData[month] = row;
-                    });
-                    
-                    seasonalityData[cleanName] = monthData;
-                    
-                    const janSubjects = Object.keys(monthData.Jan || {});
-                    totalSubjects += janSubjects.length;
-                });
-                
-                document.getElementById('audienceCount').textContent = Object.keys(seasonalityData).length;
-                document.getElementById('totalSubjects').textContent = totalSubjects;
-                
-                // Populate dropdown - Canada International first
-                const audienceSelect = document.getElementById('audience');
-                audienceSelect.innerHTML = '<option value="">Select Audience</option>';
-                
-                Object.entries(seasonalityData)
-                    .sort((a, b) => {
-                        // Canada International first
-                        if (a[0] === 'Canada International') return -1;
-                        if (b[0] === 'Canada International') return 1;
-                        // Then by subject count
-                        const aCount = Object.keys(a[1].Jan || {}).length;
-                        const bCount = Object.keys(b[1].Jan || {}).length;
-                        return bCount - aCount;
-                    })
-                    .forEach(([name, data]) => {
-                        const janSubjects = Object.keys(data.Jan || {});
-                        const option = document.createElement('option');
-                        option.value = name;
-                        const flag = name === 'Canada International' ? '🇨🇦 ' : '';
-                        option.textContent = `${flag}${name} (${janSubjects.length} subjects)`;
-                        audienceSelect.appendChild(option);
-                    });
-                
-                document.getElementById('loadingSection').style.display = 'none';
-                document.getElementById('calculatorSection').style.display = 'block';
-                
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error loading file: ' + error.message);
-                document.getElementById('loadingSection').style.display = 'none';
-                document.getElementById('uploadSection').style.display = 'block';
-            }
-        });<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sales Audience Forecast Calculator</title>
+    <title>Sales Audience Forecast & Diagnostic Tool</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -106,7 +13,7 @@
             padding: 2rem;
         }
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             background: white;
             border-radius: 16px;
@@ -120,6 +27,30 @@
         }
         .header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
         .content { padding: 2rem; }
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .tab {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s ease;
+        }
+        .tab:hover { color: #667eea; }
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
         .upload-area {
             border: 3px dashed #667eea;
             border-radius: 12px;
@@ -279,27 +210,66 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .search-box {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        .search-box:focus {
+            outline: none;
+            border-color: #11998e;
+        }
+        .result-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+        .result-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .stat-label {
+            color: #6c757d;
+        }
+        .stat-value {
+            font-weight: bold;
+            color: #667eea;
+        }
         @media (max-width: 768px) {
             .input-grid { grid-template-columns: 1fr; }
+            .tabs { flex-wrap: wrap; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>📊 Sales Audience Forecast Calculator</h1>
-            <p>Subject-level forecasting using sales audience and seasonality historical data</p>
+            <h1>🎯 Sales Audience Forecast & Diagnostic Tool</h1>
+            <p>All-in-one forecasting and subject analysis (11 audiences including 🇨🇦 Canada International)</p>
         </div>
         
         <div class="content">
             <div id="uploadSection">
                 <div class="info">
-                    <strong>📋 Single File Solution:</strong> Upload the complete Subject Audience Seasonality Matrix which includes all 11 Sales audiences (10 subject audiences + 🇨🇦 Canada International) with subject seasonality by month.
+                    <strong>📋 Single File Solution:</strong> Upload the complete Subject Audience Seasonality Matrix file. It contains all 11 audience matrices, assignment data, and sales lead data for comprehensive forecasting and diagnostics.
                 </div>
                 
                 <div class="upload-area" onclick="document.getElementById('fileInput').click()">
                     <div style="font-size: 4rem; margin-bottom: 1rem;">📊</div>
-                    <h3>Upload Complete Seasonality Matrix</h3>
+                    <h3>Upload Complete Data File</h3>
                     <p style="color: #6c757d; margin-top: 0.5rem;">Subject Audience Seasonality Matrix 4.xlsx</p>
                     <input type="file" id="fileInput" class="file-input" accept=".xlsx">
                 </div>
@@ -307,102 +277,123 @@
             
             <div id="loadingSection" class="loading" style="display: none;">
                 <div class="spinner"></div>
-                <p>Loading corrected Sales audiences and seasonality data...</p>
+                <p>Loading all data from single file...</p>
             </div>
             
-            <div id="calculatorSection" style="display: none;">
+            <div id="mainSection" style="display: none;">
                 <div class="success">
-                    <strong>✅ Loaded Corrected Data!</strong> Found <span id="audienceCount">0</span> Sales audiences (including 🇨🇦 Canada International) with <span id="totalSubjects">0</span> total subjects.
+                    <strong>✅ All Data Loaded!</strong> <span id="audienceCount">0</span> audiences, <span id="totalSubjects">0</span> subjects, <span id="assignmentRows">0</span> assignment records, <span id="salesRows">0</span> sales records.
                 </div>
                 
-                <div class="input-section">
-                    <div class="input-grid">
-                        <div>
-                            <label for="audience">Sales Audience</label>
-                            <select id="audience">
-                                <option value="">Select Audience</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="totalClients">Total New Clients</label>
-                            <input type="number" id="totalClients" placeholder="e.g., 100" min="1">
-                        </div>
-                        <div>
-                            <label for="month">Month</label>
-                            <select id="month">
-                                <option value="">Select Month</option>
-                                <option value="Jan">January</option>
-                                <option value="Feb">February</option>
-                                <option value="Mar">March</option>
-                                <option value="Apr">April</option>
-                                <option value="May">May</option>
-                                <option value="Jun">June</option>
-                                <option value="Jul">July</option>
-                                <option value="Aug">August</option>
-                                <option value="Sep">September</option>
-                                <option value="Oct">October</option>
-                                <option value="Nov">November</option>
-                                <option value="Dec">December</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <button class="btn" onclick="calculateForecast()">
-                        🎯 Calculate Subject Forecast
-                    </button>
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('forecast')">📊 Forecast Calculator</button>
+                    <button class="tab" onclick="switchTab('diagnostic')">🔍 Subject Diagnostic</button>
                 </div>
                 
-                <div id="resultsSection" style="display: none;">
-                    <div class="summary-card">
-                        <h3 style="margin-bottom: 1rem;">Forecast Summary</h3>
-                        <div class="summary-grid">
-                            <div class="summary-stat">
-                                <div class="summary-value" id="summaryAudience">-</div>
-                                <div class="summary-label">Audience</div>
+                <!-- FORECAST TAB -->
+                <div id="forecastTab" class="tab-content active">
+                    <div class="input-section">
+                        <div class="input-grid">
+                            <div>
+                                <label for="audience">Sales Audience</label>
+                                <select id="audience">
+                                    <option value="">Select Audience</option>
+                                </select>
                             </div>
-                            <div class="summary-stat">
-                                <div class="summary-value" id="summaryMonth">-</div>
-                                <div class="summary-label">Month</div>
+                            <div>
+                                <label for="totalClients">Total New Clients</label>
+                                <input type="number" id="totalClients" placeholder="e.g., 100" min="1">
                             </div>
-                            <div class="summary-stat">
-                                <div class="summary-value" id="inputClients">-</div>
-                                <div class="summary-label">Input Clients</div>
-                            </div>
-                            <div class="summary-stat">
-                                <div class="summary-value" id="activeSubjects">-</div>
-                                <div class="summary-label">Active Subjects</div>
-                            </div>
-                            <div class="summary-stat">
-                                <div class="summary-value" id="totalForecast">-</div>
-                                <div class="summary-label">Total Forecast</div>
+                            <div>
+                                <label for="month">Month</label>
+                                <select id="month">
+                                    <option value="">Select Month</option>
+                                    <option value="Jan">January</option>
+                                    <option value="Feb">February</option>
+                                    <option value="Mar">March</option>
+                                    <option value="Apr">April</option>
+                                    <option value="May">May</option>
+                                    <option value="Jun">June</option>
+                                    <option value="Jul">July</option>
+                                    <option value="Aug">August</option>
+                                    <option value="Sep">September</option>
+                                    <option value="Oct">October</option>
+                                    <option value="Nov">November</option>
+                                    <option value="Dec">December</option>
+                                </select>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div style="margin-bottom: 2rem;">
-                        <button class="btn" onclick="downloadForecast()">
-                            📥 Download Forecast CSV
-                        </button>
-                        <button class="btn btn-secondary" onclick="resetForecast()">
-                            🔄 New Forecast
+                        
+                        <button class="btn" onclick="calculateForecast()">
+                            🎯 Calculate Subject Forecast
                         </button>
                     </div>
                     
-                    <h3 style="margin-bottom: 1rem;">Subject-Level Forecast</h3>
-                    <div class="table-wrapper">
-                        <table class="forecast-table">
-                            <thead>
-                                <tr>
-                                    <th style="width: 60px;">Rank</th>
-                                    <th>Subject</th>
-                                    <th style="width: 120px;">Seasonal Share</th>
-                                    <th style="width: 120px;">Forecast Clients</th>
-                                    <th style="width: 150px;">Distribution</th>
-                                </tr>
-                            </thead>
-                            <tbody id="forecastTableBody"></tbody>
-                        </table>
+                    <div id="forecastResults" style="display: none;">
+                        <div class="summary-card">
+                            <h3 style="margin-bottom: 1rem;">Forecast Summary</h3>
+                            <div class="summary-grid">
+                                <div class="summary-stat">
+                                    <div class="summary-value" id="summaryAudience">-</div>
+                                    <div class="summary-label">Audience</div>
+                                </div>
+                                <div class="summary-stat">
+                                    <div class="summary-value" id="summaryMonth">-</div>
+                                    <div class="summary-label">Month</div>
+                                </div>
+                                <div class="summary-stat">
+                                    <div class="summary-value" id="inputClients">-</div>
+                                    <div class="summary-label">Input Clients</div>
+                                </div>
+                                <div class="summary-stat">
+                                    <div class="summary-value" id="activeSubjects">-</div>
+                                    <div class="summary-label">Active Subjects</div>
+                                </div>
+                                <div class="summary-stat">
+                                    <div class="summary-value" id="totalForecast">-</div>
+                                    <div class="summary-label">Total Forecast</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 2rem;">
+                            <button class="btn" onclick="downloadForecast()">
+                                📥 Download Forecast CSV
+                            </button>
+                            <button class="btn btn-secondary" onclick="resetForecast()">
+                                🔄 New Forecast
+                            </button>
+                        </div>
+                        
+                        <h3 style="margin-bottom: 1rem;">Subject-Level Forecast</h3>
+                        <div class="table-wrapper">
+                            <table class="forecast-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 60px;">Rank</th>
+                                        <th>Subject</th>
+                                        <th style="width: 120px;">Seasonal Share</th>
+                                        <th style="width: 120px;">Forecast Clients</th>
+                                        <th style="width: 150px;">Distribution</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="forecastTableBody"></tbody>
+                            </table>
+                        </div>
                     </div>
+                </div>
+                
+                <!-- DIAGNOSTIC TAB -->
+                <div id="diagnosticTab" class="tab-content">
+                    <input type="text" id="searchBox" class="search-box" placeholder="🔍 Search for any subject (e.g., High School Chemistry)">
+                    <button class="btn" onclick="searchSubject()">Search Subject</button>
+                    
+                    <div id="diagnosticLoading" class="loading">
+                        <div class="spinner"></div>
+                        <p>Analyzing subject...</p>
+                    </div>
+                    
+                    <div id="diagnosticResults"></div>
                 </div>
             </div>
         </div>
@@ -412,6 +403,8 @@
         const XLSX = await import('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm');
         
         let seasonalityData = {};
+        let assignmentData = null;
+        let salesLeadsData = null;
         let currentForecast = null;
         
         document.getElementById('fileInput').addEventListener('change', async (e) => {
@@ -425,29 +418,20 @@
                 const data = await file.arrayBuffer();
                 const workbook = XLSX.read(data);
                 
-                // Filter to Sales audiences only
+                // Load Sales audience matrices
                 const salesSheets = workbook.SheetNames.filter(name => 
                     name.startsWith('Sales-') || name.startsWith('Sals-')
                 );
                 
-                if (salesSheets.length === 0) {
-                    alert('No Sales audience sheets found. Looking for sheets starting with "Sales-"');
-                    document.getElementById('loadingSection').style.display = 'none';
-                    document.getElementById('uploadSection').style.display = 'block';
-                    return;
-                }
-                
                 let totalSubjects = 0;
                 
-                // Load each Sales audience
                 salesSheets.forEach(sheetName => {
                     const sheet = workbook.Sheets[sheetName];
                     const sheetData = XLSX.utils.sheet_to_json(sheet);
                     
-                    // Clean audience name
-                    const cleanName = sheetName.replace(/^Sales-|^Sals-/, '');
+                    let cleanName = sheetName.replace(/^Sales-|^Sals-/, '');
+                    if (cleanName === 'InternationalCA') cleanName = 'Canada International';
                     
-                    // Convert to month-keyed object
                     const monthData = {};
                     sheetData.forEach(row => {
                         const month = row.Month;
@@ -456,20 +440,32 @@
                     });
                     
                     seasonalityData[cleanName] = monthData;
-                    
-                    const janSubjects = Object.keys(monthData.Jan || {});
-                    totalSubjects += janSubjects.length;
+                    totalSubjects += Object.keys(monthData.Jan || {}).length;
                 });
+                
+                // Load Assignment Data sheet
+                if (workbook.Sheets['Assignment Data']) {
+                    assignmentData = XLSX.utils.sheet_to_json(workbook.Sheets['Assignment Data']);
+                }
+                
+                // Load Sales Audience (Leads) sheet
+                if (workbook.Sheets['Sales Audience (Leads)']) {
+                    salesLeadsData = XLSX.utils.sheet_to_json(workbook.Sheets['Sales Audience (Leads)']);
+                }
                 
                 document.getElementById('audienceCount').textContent = Object.keys(seasonalityData).length;
                 document.getElementById('totalSubjects').textContent = totalSubjects;
+                document.getElementById('assignmentRows').textContent = assignmentData ? assignmentData.length.toLocaleString() : '0';
+                document.getElementById('salesRows').textContent = salesLeadsData ? salesLeadsData.length.toLocaleString() : '0';
                 
-                // Populate dropdown
+                // Populate audience dropdown
                 const audienceSelect = document.getElementById('audience');
                 audienceSelect.innerHTML = '<option value="">Select Audience</option>';
                 
                 Object.entries(seasonalityData)
                     .sort((a, b) => {
+                        if (a[0] === 'Canada International') return -1;
+                        if (b[0] === 'Canada International') return 1;
                         const aCount = Object.keys(a[1].Jan || {}).length;
                         const bCount = Object.keys(b[1].Jan || {}).length;
                         return bCount - aCount;
@@ -478,12 +474,13 @@
                         const janSubjects = Object.keys(data.Jan || {});
                         const option = document.createElement('option');
                         option.value = name;
-                        option.textContent = `${name} (${janSubjects.length} subjects)`;
+                        const flag = name === 'Canada International' ? '🇨🇦 ' : '';
+                        option.textContent = `${flag}${name} (${janSubjects.length} subjects)`;
                         audienceSelect.appendChild(option);
                     });
                 
                 document.getElementById('loadingSection').style.display = 'none';
-                document.getElementById('calculatorSection').style.display = 'block';
+                document.getElementById('mainSection').style.display = 'block';
                 
             } catch (error) {
                 console.error('Error:', error);
@@ -530,7 +527,7 @@
         function displayForecast() {
             const { audience, month, totalClients, forecast } = currentForecast;
             
-            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('forecastResults').style.display = 'block';
             
             const totalForecast = forecast.reduce((sum, f) => sum + f['Forecast Clients'], 0);
             
@@ -563,11 +560,144 @@
                 tbody.appendChild(tr);
             });
             
-            document.getElementById('resultsSection').scrollIntoView({ 
+            document.getElementById('forecastResults').scrollIntoView({ 
                 behavior: 'smooth', 
                 block: 'nearest' 
             });
         }
+        
+        window.searchSubject = function() {
+            const subjectName = document.getElementById('searchBox').value.trim();
+            if (!subjectName) {
+                alert('Please enter a subject name');
+                return;
+            }
+            
+            document.getElementById('diagnosticLoading').style.display = 'block';
+            document.getElementById('diagnosticResults').innerHTML = '';
+            
+            setTimeout(() => {
+                let html = '';
+                
+                // Search assignment data
+                if (assignmentData) {
+                    const assignmentRows = assignmentData.filter(row => 
+                        row['Desired Placement Campaigns Subject Name 1'] === subjectName
+                    );
+                    
+                    let totalAssignments = 0;
+                    assignmentRows.forEach(row => {
+                        totalAssignments += parseFloat(String(row['Desired Placement Campaigns DPC Count']).replace(/,/g, '')) || 0;
+                    });
+                    
+                    html += `<div class="result-card">
+                        <div class="result-title">${subjectName}</div>`;
+                    
+                    if (assignmentRows.length === 0) {
+                        html += `<div style="color: #dc3545; font-weight: 600;">❌ Not found in assignment data</div>`;
+                    } else {
+                        html += `
+                            <div class="stat-row">
+                                <span class="stat-label">Total Assignments (5 years):</span>
+                                <span class="stat-value">${totalAssignments.toLocaleString()}</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Month Records:</span>
+                                <span class="stat-value">${assignmentRows.length}</span>
+                            </div>`;
+                    }
+                    
+                    html += `</div>`;
+                }
+                
+                // Search sales leads data
+                if (salesLeadsData) {
+                    const salesRows = salesLeadsData.filter(row => 
+                        row['Subject Name'] === subjectName
+                    );
+                    
+                    if (salesRows.length > 0) {
+                        const leadsByAudience = {};
+                        salesRows.forEach(row => {
+                            const aud = row['Audience (Sales)'];
+                            const leads = parseFloat(String(row['Net Leads']).replace(/,/g, '')) || 0;
+                            leadsByAudience[aud] = (leadsByAudience[aud] || 0) + leads;
+                        });
+                        
+                        const totalLeads = Object.values(leadsByAudience).reduce((sum, l) => sum + l, 0);
+                        const maxAudience = Object.entries(leadsByAudience).sort((a, b) => b[1] - a[1])[0];
+                        
+                        html += `<div class="result-card">
+                            <div class="result-title">Sales Performance</div>
+                            <div class="stat-row">
+                                <span class="stat-label">Total Net Leads:</span>
+                                <span class="stat-value">${totalLeads.toLocaleString()}</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Primary Sales Audience:</span>
+                                <span class="stat-value">${maxAudience ? maxAudience[0] : 'Unknown'}</span>
+                            </div>`;
+                        
+                        if (Object.keys(leadsByAudience).length > 1) {
+                            html += `<div style="margin-top: 1rem;"><strong>Leads by Audience:</strong></div>`;
+                            Object.entries(leadsByAudience)
+                                .sort((a, b) => b[1] - a[1])
+                                .forEach(([aud, leads]) => {
+                                    html += `<div class="stat-row">
+                                        <span class="stat-label">${aud}:</span>
+                                        <span class="stat-value">${leads.toLocaleString()}</span>
+                                    </div>`;
+                                });
+                        }
+                        
+                        html += `</div>`;
+                    } else {
+                        html += `<div class="result-card">
+                            <div style="color: #dc3545; font-weight: 600;">❌ Not found in Sales audience data</div>
+                            <div style="color: #6c757d; margin-top: 0.5rem; font-size: 0.9rem;">This subject won't appear in Sales audience matrices.</div>
+                        </div>`;
+                    }
+                }
+                
+                // Check which matrices contain this subject
+                const foundInMatrices = [];
+                Object.entries(seasonalityData).forEach(([audience, monthData]) => {
+                    const octData = monthData.Oct || {};
+                    if (octData[subjectName] !== undefined && octData[subjectName] > 0) {
+                        foundInMatrices.push({
+                            audience: audience,
+                            share: octData[subjectName]
+                        });
+                    }
+                });
+                
+                if (foundInMatrices.length > 0) {
+                    html += `<div class="result-card">
+                        <div class="result-title">Found in Seasonality Matrices</div>
+                        <div style="margin-bottom: 0.5rem; color: #6c757d; font-size: 0.9rem;">October share percentages:</div>`;
+                    
+                    foundInMatrices
+                        .sort((a, b) => b.share - a.share)
+                        .forEach(m => {
+                            const flag = m.audience === 'Canada International' ? '🇨🇦 ' : '';
+                            html += `<div class="stat-row">
+                                <span class="stat-label">${flag}${m.audience}:</span>
+                                <span class="stat-value">${(m.share * 100).toFixed(2)}%</span>
+                            </div>`;
+                        });
+                    
+                    html += `</div>`;
+                } else {
+                    html += `<div class="result-card">
+                        <div style="color: #ffc107; font-weight: 600;">⚠️ Not found in any Sales audience matrix</div>
+                        <div style="color: #6c757d; margin-top: 0.5rem; font-size: 0.9rem;">Either filtered out due to low volume or not in sales data.</div>
+                    </div>`;
+                }
+                
+                document.getElementById('diagnosticResults').innerHTML = html;
+                document.getElementById('diagnosticLoading').style.display = 'none';
+            }, 100);
+        };
         
         window.downloadForecast = function() {
             if (!currentForecast) return;
@@ -595,8 +725,21 @@
             document.getElementById('audience').value = '';
             document.getElementById('totalClients').value = '';
             document.getElementById('month').value = '';
-            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('forecastResults').style.display = 'none';
             currentForecast = null;
+        };
+        
+        window.switchTab = function(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            if (tab === 'forecast') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('forecastTab').classList.add('active');
+            } else if (tab === 'diagnostic') {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('diagnosticTab').classList.add('active');
+            }
         };
     </script>
 </body>
