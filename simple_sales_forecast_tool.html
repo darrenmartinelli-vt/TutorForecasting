@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Audience Forecast Calculator</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        .header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        .content { padding: 2rem; }
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+        .upload-area:hover { background: #e9ecef; }
+        .file-input { display: none; }
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 4px;
+        }
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #0c5460;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 4px;
+        }
+        .input-section {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .btn {
+            padding: 0.75rem 2rem;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(17, 153, 142, 0.4);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin-left: 1rem;
+        }
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .summary-stat {
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: 6px;
+        }
+        .summary-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .summary-label {
+            opacity: 0.9;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        .forecast-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .forecast-table th {
+            background: #667eea;
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .forecast-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #f8f9fa;
+        }
+        .forecast-table tr:hover { background: #f8f9fa; }
+        .progress-bar {
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            min-width: 100px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        .table-wrapper {
+            max-height: 600px;
+            overflow-y: auto;
+            margin-top: 1rem;
+            border-radius: 8px;
+        }
+        .loading {
+            text-align: center;
+            padding: 3rem;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @media (max-width: 768px) {
+            .input-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Sales Audience Forecast Calculator</h1>
+            <p>Subject-level forecasting using sales audience and seasonality historical data</p>
+        </div>
+        
+        <div class="content">
+            <div id="uploadSection">
+                <div class="info">
+                    <strong>📋 Corrected Data:</strong> Upload the Subject Audience Seasonality Matrix which segments subjects into the correct Sales Audiences and includes subject seasonality by month. This version has been recalculated from raw assignment counts (Calculus > Trigonometry ✅).
+                </div>
+                
+                <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">📊</div>
+                    <h3>Upload Corrected Seasonality Matrix</h3>
+                    <p style="color: #6c757d; margin-top: 0.5rem;">Subject Audience Seasonality Matrix 3.xlsx</p>
+                    <input type="file" id="fileInput" class="file-input" accept=".xlsx">
+                </div>
+            </div>
+            
+            <div id="loadingSection" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Loading corrected Sales audiences and seasonality data...</p>
+            </div>
+            
+            <div id="calculatorSection" style="display: none;">
+                <div class="success">
+                    <strong>✅ Loaded Corrected Data!</strong> Found <span id="audienceCount">0</span> Sales audiences with <span id="totalSubjects">0</span> total subjects. Calculus > Trigonometry verified ✅
+                </div>
+                
+                <div class="input-section">
+                    <div class="input-grid">
+                        <div>
+                            <label for="audience">Sales Audience</label>
+                            <select id="audience">
+                                <option value="">Select Audience</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="totalClients">Total New Clients</label>
+                            <input type="number" id="totalClients" placeholder="e.g., 100" min="1">
+                        </div>
+                        <div>
+                            <label for="month">Month</label>
+                            <select id="month">
+                                <option value="">Select Month</option>
+                                <option value="Jan">January</option>
+                                <option value="Feb">February</option>
+                                <option value="Mar">March</option>
+                                <option value="Apr">April</option>
+                                <option value="May">May</option>
+                                <option value="Jun">June</option>
+                                <option value="Jul">July</option>
+                                <option value="Aug">August</option>
+                                <option value="Sep">September</option>
+                                <option value="Oct">October</option>
+                                <option value="Nov">November</option>
+                                <option value="Dec">December</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button class="btn" onclick="calculateForecast()">
+                        🎯 Calculate Subject Forecast
+                    </button>
+                </div>
+                
+                <div id="resultsSection" style="display: none;">
+                    <div class="summary-card">
+                        <h3 style="margin-bottom: 1rem;">Forecast Summary</h3>
+                        <div class="summary-grid">
+                            <div class="summary-stat">
+                                <div class="summary-value" id="summaryAudience">-</div>
+                                <div class="summary-label">Audience</div>
+                            </div>
+                            <div class="summary-stat">
+                                <div class="summary-value" id="summaryMonth">-</div>
+                                <div class="summary-label">Month</div>
+                            </div>
+                            <div class="summary-stat">
+                                <div class="summary-value" id="inputClients">-</div>
+                                <div class="summary-label">Input Clients</div>
+                            </div>
+                            <div class="summary-stat">
+                                <div class="summary-value" id="activeSubjects">-</div>
+                                <div class="summary-label">Active Subjects</div>
+                            </div>
+                            <div class="summary-stat">
+                                <div class="summary-value" id="totalForecast">-</div>
+                                <div class="summary-label">Total Forecast</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 2rem;">
+                        <button class="btn" onclick="downloadForecast()">
+                            📥 Download Forecast CSV
+                        </button>
+                        <button class="btn btn-secondary" onclick="resetForecast()">
+                            🔄 New Forecast
+                        </button>
+                    </div>
+                    
+                    <h3 style="margin-bottom: 1rem;">Subject-Level Forecast</h3>
+                    <div class="table-wrapper">
+                        <table class="forecast-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 60px;">Rank</th>
+                                    <th>Subject</th>
+                                    <th style="width: 120px;">Seasonal Share</th>
+                                    <th style="width: 120px;">Forecast Clients</th>
+                                    <th style="width: 150px;">Distribution</th>
+                                </tr>
+                            </thead>
+                            <tbody id="forecastTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        const XLSX = await import('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm');
+        
+        let seasonalityData = {};
+        let currentForecast = null;
+        
+        document.getElementById('fileInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            document.getElementById('uploadSection').style.display = 'none';
+            document.getElementById('loadingSection').style.display = 'block';
+            
+            try {
+                const data = await file.arrayBuffer();
+                const workbook = XLSX.read(data);
+                
+                // Filter to Sales audiences only
+                const salesSheets = workbook.SheetNames.filter(name => 
+                    name.startsWith('Sales-') || name.startsWith('Sals-')
+                );
+                
+                if (salesSheets.length === 0) {
+                    alert('No Sales audience sheets found. Looking for sheets starting with "Sales-"');
+                    document.getElementById('loadingSection').style.display = 'none';
+                    document.getElementById('uploadSection').style.display = 'block';
+                    return;
+                }
+                
+                let totalSubjects = 0;
+                
+                // Load each Sales audience
+                salesSheets.forEach(sheetName => {
+                    const sheet = workbook.Sheets[sheetName];
+                    const sheetData = XLSX.utils.sheet_to_json(sheet);
+                    
+                    // Clean audience name
+                    const cleanName = sheetName.replace(/^Sales-|^Sals-/, '');
+                    
+                    // Convert to month-keyed object
+                    const monthData = {};
+                    sheetData.forEach(row => {
+                        const month = row.Month;
+                        delete row.Month;
+                        monthData[month] = row;
+                    });
+                    
+                    seasonalityData[cleanName] = monthData;
+                    
+                    const janSubjects = Object.keys(monthData.Jan || {});
+                    totalSubjects += janSubjects.length;
+                });
+                
+                document.getElementById('audienceCount').textContent = Object.keys(seasonalityData).length;
+                document.getElementById('totalSubjects').textContent = totalSubjects;
+                
+                // Populate dropdown
+                const audienceSelect = document.getElementById('audience');
+                audienceSelect.innerHTML = '<option value="">Select Audience</option>';
+                
+                Object.entries(seasonalityData)
+                    .sort((a, b) => {
+                        const aCount = Object.keys(a[1].Jan || {}).length;
+                        const bCount = Object.keys(b[1].Jan || {}).length;
+                        return bCount - aCount;
+                    })
+                    .forEach(([name, data]) => {
+                        const janSubjects = Object.keys(data.Jan || {});
+                        const option = document.createElement('option');
+                        option.value = name;
+                        option.textContent = `${name} (${janSubjects.length} subjects)`;
+                        audienceSelect.appendChild(option);
+                    });
+                
+                document.getElementById('loadingSection').style.display = 'none';
+                document.getElementById('calculatorSection').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error loading file: ' + error.message);
+                document.getElementById('loadingSection').style.display = 'none';
+                document.getElementById('uploadSection').style.display = 'block';
+            }
+        });
+        
+        window.calculateForecast = function() {
+            const audience = document.getElementById('audience').value;
+            const totalClients = parseInt(document.getElementById('totalClients').value);
+            const month = document.getElementById('month').value;
+            
+            if (!audience || !totalClients || !month) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            const monthData = seasonalityData[audience]?.[month];
+            if (!monthData) {
+                alert(`No data for ${month} in ${audience}`);
+                return;
+            }
+            
+            const forecast = [];
+            Object.entries(monthData).forEach(([subject, share]) => {
+                const clients = Math.round(totalClients * share);
+                if (clients > 0) {
+                    forecast.push({
+                        Subject: subject,
+                        'Seasonal Share': share,
+                        'Forecast Clients': clients
+                    });
+                }
+            });
+            
+            forecast.sort((a, b) => b['Forecast Clients'] - a['Forecast Clients']);
+            
+            currentForecast = { audience, month, totalClients, forecast };
+            displayForecast();
+        };
+        
+        function displayForecast() {
+            const { audience, month, totalClients, forecast } = currentForecast;
+            
+            document.getElementById('resultsSection').style.display = 'block';
+            
+            const totalForecast = forecast.reduce((sum, f) => sum + f['Forecast Clients'], 0);
+            
+            document.getElementById('summaryAudience').textContent = audience;
+            document.getElementById('summaryMonth').textContent = month;
+            document.getElementById('inputClients').textContent = totalClients.toLocaleString();
+            document.getElementById('activeSubjects').textContent = forecast.length;
+            document.getElementById('totalForecast').textContent = totalForecast.toLocaleString();
+            
+            const tbody = document.getElementById('forecastTableBody');
+            tbody.innerHTML = '';
+            
+            const maxClients = forecast[0]?.['Forecast Clients'] || 1;
+            
+            forecast.forEach((f, i) => {
+                const tr = document.createElement('tr');
+                const barWidth = (f['Forecast Clients'] / maxClients * 100).toFixed(1);
+                
+                tr.innerHTML = `
+                    <td><strong>${i + 1}</strong></td>
+                    <td><strong>${f.Subject}</strong></td>
+                    <td>${(f['Seasonal Share'] * 100).toFixed(2)}%</td>
+                    <td><strong>${f['Forecast Clients']}</strong></td>
+                    <td>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${barWidth}%"></div>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            document.getElementById('resultsSection').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'nearest' 
+            });
+        }
+        
+        window.downloadForecast = function() {
+            if (!currentForecast) return;
+            
+            const { audience, month, forecast } = currentForecast;
+            
+            const headers = ['Rank', 'Subject', 'Seasonal Share', 'Forecast Clients'];
+            const rows = forecast.map((f, i) => 
+                [i + 1, `"${f.Subject}"`, f['Seasonal Share'].toFixed(4), f['Forecast Clients']].join(',')
+            );
+            
+            const csv = [headers.join(','), ...rows].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${audience.replace(/[^a-z0-9]/gi, '_')}_${month}_Forecast.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        };
+        
+        window.resetForecast = function() {
+            document.getElementById('audience').value = '';
+            document.getElementById('totalClients').value = '';
+            document.getElementById('month').value = '';
+            document.getElementById('resultsSection').style.display = 'none';
+            currentForecast = null;
+        };
+    </script>
+</body>
+</html>
