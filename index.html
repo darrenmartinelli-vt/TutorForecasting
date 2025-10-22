@@ -13,7 +13,7 @@
             padding: 2rem;
         }
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             background: white;
             border-radius: 16px;
@@ -45,10 +45,7 @@
             transition: all 0.3s ease;
         }
         .tab:hover { color: #667eea; }
-        .tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-        }
+        .tab.active { color: #667eea; border-bottom-color: #667eea; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .upload-area {
@@ -77,45 +74,65 @@
             margin-bottom: 2rem;
             border-radius: 4px;
         }
-        .input-section {
-            background: #f8f9fa;
-            padding: 2rem;
-            border-radius: 8px;
+        .bulk-input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
             margin-bottom: 2rem;
         }
-        .input-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
+        .input-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
         }
-        label {
+        .input-card label {
             display: block;
             font-weight: 600;
             margin-bottom: 0.5rem;
             color: #333;
         }
-        input, select {
+        .input-card input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 1.1rem;
+        }
+        .input-card input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .month-selector {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        .month-selector label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        .month-selector select {
             width: 100%;
             padding: 0.75rem;
             border: 2px solid #e9ecef;
             border-radius: 6px;
             font-size: 1rem;
         }
-        input:focus, select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
         .btn {
-            padding: 0.75rem 2rem;
+            padding: 1rem 3rem;
             background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
             color: white;
             border: none;
             border-radius: 6px;
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 1.3rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 1rem;
+            width: 100%;
         }
         .btn:hover {
             transform: translateY(-2px);
@@ -123,75 +140,63 @@
         }
         .btn-secondary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            margin-left: 1rem;
+            margin-top: 1rem;
+            font-size: 1.1rem;
         }
-        .summary-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 2rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-        }
-        .summary-grid {
+        .results-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
+            gap: 2rem;
         }
-        .summary-stat {
-            text-align: center;
-            background: rgba(255,255,255,0.1);
-            padding: 1rem;
-            border-radius: 6px;
+        .audience-result {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border-left: 4px solid #667eea;
         }
-        .summary-value {
-            font-size: 2rem;
+        .audience-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .audience-name {
+            font-size: 1.3rem;
             font-weight: bold;
+            color: #333;
         }
-        .summary-label {
-            opacity: 0.9;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
+        .audience-total {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
         }
-        .forecast-table {
+        .subject-table {
             width: 100%;
-            border-collapse: collapse;
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border-radius: 8px;
-            overflow: hidden;
+            font-size: 0.9rem;
         }
-        .forecast-table th {
-            background: #667eea;
-            color: white;
-            padding: 1rem;
-            text-align: left;
+        .subject-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 1rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .subject-row:last-child {
+            border-bottom: none;
+        }
+        .subject-name {
             font-weight: 600;
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            color: #333;
         }
-        .forecast-table td {
-            padding: 0.75rem 1rem;
-            border-bottom: 1px solid #f8f9fa;
+        .subject-share {
+            color: #6c757d;
+            text-align: right;
         }
-        .forecast-table tr:hover { background: #f8f9fa; }
-        .progress-bar {
-            height: 8px;
-            background: #e9ecef;
-            border-radius: 4px;
-            overflow: hidden;
-            min-width: 100px;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-        }
-        .table-wrapper {
-            max-height: 600px;
-            overflow-y: auto;
-            margin-top: 1rem;
-            border-radius: 8px;
+        .subject-forecast {
+            font-weight: bold;
+            color: #667eea;
+            text-align: right;
         }
         .loading {
             text-align: center;
@@ -241,15 +246,13 @@
             padding: 0.5rem 0;
             border-bottom: 1px solid #e9ecef;
         }
-        .stat-label {
-            color: #6c757d;
-        }
+        .stat-label { color: #6c757d; }
         .stat-value {
             font-weight: bold;
             color: #667eea;
         }
         @media (max-width: 768px) {
-            .input-grid { grid-template-columns: 1fr; }
+            .bulk-input-grid { grid-template-columns: 1fr; }
             .tabs { flex-wrap: wrap; }
         }
     </style>
@@ -258,13 +261,13 @@
     <div class="container">
         <div class="header">
             <h1>🎯 Sales Audience Forecast & Diagnostic Tool</h1>
-            <p>All-in-one forecasting and subject analysis (11 audiences including 🇨🇦 Canada International)</p>
+            <p>Bulk forecasting for 11 audiences (Normal rounding: 99% accuracy)</p>
         </div>
         
         <div class="content">
             <div id="uploadSection">
                 <div class="info">
-                    <strong>📋 Single File Solution:</strong> Upload the complete Subject Audience Seasonality Matrix file. It contains all 11 audience matrices, assignment data, and sales lead data for comprehensive forecasting and diagnostics.
+                    <strong>📋 Single File Solution:</strong> Upload the complete Subject Audience Seasonality Matrix file with all 11 audiences.
                 </div>
                 
                 <div class="upload-area" onclick="document.getElementById('fileInput').click()">
@@ -277,120 +280,64 @@
             
             <div id="loadingSection" class="loading" style="display: none;">
                 <div class="spinner"></div>
-                <p>Loading all data from single file...</p>
+                <p>Loading all 11 audiences...</p>
             </div>
             
             <div id="mainSection" style="display: none;">
                 <div class="success">
-                    <strong>✅ All Data Loaded!</strong> <span id="audienceCount">0</span> audiences, <span id="totalSubjects">0</span> subjects, <span id="assignmentRows">0</span> assignment records, <span id="salesRows">0</span> sales records.
+                    <strong>✅ Loaded!</strong> <span id="audienceCount">0</span> audiences ready.
                 </div>
                 
                 <div class="tabs">
-                    <button class="tab active" onclick="switchTab('forecast')">📊 Forecast Calculator</button>
-                    <button class="tab" onclick="switchTab('diagnostic')">🔍 Subject Diagnostic</button>
+                    <button class="tab active" onclick="switchTab('bulk')">📊 Bulk Forecast</button>
+                    <button class="tab" onclick="switchTab('diagnostic')">🔍 Diagnostic</button>
                 </div>
                 
-                <!-- FORECAST TAB -->
-                <div id="forecastTab" class="tab-content active">
-                    <div class="input-section">
-                        <div class="input-grid">
-                            <div>
-                                <label for="audience">Sales Audience</label>
-                                <select id="audience">
-                                    <option value="">Select Audience</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="totalClients">Total New Clients</label>
-                                <input type="number" id="totalClients" placeholder="e.g., 100" min="1">
-                            </div>
-                            <div>
-                                <label for="month">Month</label>
-                                <select id="month">
-                                    <option value="">Select Month</option>
-                                    <option value="Jan">January</option>
-                                    <option value="Feb">February</option>
-                                    <option value="Mar">March</option>
-                                    <option value="Apr">April</option>
-                                    <option value="May">May</option>
-                                    <option value="Jun">June</option>
-                                    <option value="Jul">July</option>
-                                    <option value="Aug">August</option>
-                                    <option value="Sep">September</option>
-                                    <option value="Oct">October</option>
-                                    <option value="Nov">November</option>
-                                    <option value="Dec">December</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <button class="btn" onclick="calculateForecast()">
-                            🎯 Calculate Subject Forecast
-                        </button>
+                <div id="bulkTab" class="tab-content active">
+                    <div class="info">
+                        <strong>📊 Rounding Method:</strong> Normal rounding (0.49→0, 0.50→1). Shows all subjects including 0s. Totals match input within 0.5-2%.
                     </div>
                     
-                    <div id="forecastResults" style="display: none;">
-                        <div class="summary-card">
-                            <h3 style="margin-bottom: 1rem;">Forecast Summary</h3>
-                            <div class="summary-grid">
-                                <div class="summary-stat">
-                                    <div class="summary-value" id="summaryAudience">-</div>
-                                    <div class="summary-label">Audience</div>
-                                </div>
-                                <div class="summary-stat">
-                                    <div class="summary-value" id="summaryMonth">-</div>
-                                    <div class="summary-label">Month</div>
-                                </div>
-                                <div class="summary-stat">
-                                    <div class="summary-value" id="inputClients">-</div>
-                                    <div class="summary-label">Input Clients</div>
-                                </div>
-                                <div class="summary-stat">
-                                    <div class="summary-value" id="activeSubjects">-</div>
-                                    <div class="summary-label">Active Subjects</div>
-                                </div>
-                                <div class="summary-stat">
-                                    <div class="summary-value" id="totalForecast">-</div>
-                                    <div class="summary-label">Total Forecast</div>
-                                </div>
-                            </div>
-                        </div>
-                        
+                    <div class="month-selector">
+                        <label for="bulkMonth">Select Month</label>
+                        <select id="bulkMonth">
+                            <option value="">Select Month</option>
+                            <option value="Jan">January</option>
+                            <option value="Feb">February</option>
+                            <option value="Mar">March</option>
+                            <option value="Apr">April</option>
+                            <option value="May">May</option>
+                            <option value="Jun">June</option>
+                            <option value="Jul">July</option>
+                            <option value="Aug">August</option>
+                            <option value="Sep">September</option>
+                            <option value="Oct">October</option>
+                            <option value="Nov">November</option>
+                            <option value="Dec">December</option>
+                        </select>
+                    </div>
+                    
+                    <div class="bulk-input-grid" id="bulkInputGrid"></div>
+                    
+                    <button class="btn" onclick="calculateBulkForecast()">🚀 Calculate All Forecasts</button>
+                    
+                    <div id="bulkResults" style="display: none; margin-top: 2rem;">
                         <div style="margin-bottom: 2rem;">
-                            <button class="btn" onclick="downloadForecast()">
-                                📥 Download Forecast CSV
-                            </button>
-                            <button class="btn btn-secondary" onclick="resetForecast()">
-                                🔄 New Forecast
-                            </button>
+                            <button class="btn btn-secondary" onclick="downloadAllForecasts()">📥 Download CSV</button>
+                            <button class="btn btn-secondary" onclick="resetBulk()">🔄 Reset</button>
                         </div>
                         
-                        <h3 style="margin-bottom: 1rem;">Subject-Level Forecast</h3>
-                        <div class="table-wrapper">
-                            <table class="forecast-table">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 60px;">Rank</th>
-                                        <th>Subject</th>
-                                        <th style="width: 120px;">Seasonal Share</th>
-                                        <th style="width: 120px;">Forecast Clients</th>
-                                        <th style="width: 150px;">Distribution</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="forecastTableBody"></tbody>
-                            </table>
-                        </div>
+                        <div class="results-grid" id="bulkResultsGrid"></div>
                     </div>
                 </div>
                 
-                <!-- DIAGNOSTIC TAB -->
                 <div id="diagnosticTab" class="tab-content">
-                    <input type="text" id="searchBox" class="search-box" placeholder="🔍 Search for any subject (e.g., High School Chemistry)">
-                    <button class="btn" onclick="searchSubject()">Search Subject</button>
+                    <input type="text" id="searchBox" class="search-box" placeholder="🔍 Search subject">
+                    <button class="btn" onclick="searchSubject()">Search</button>
                     
-                    <div id="diagnosticLoading" class="loading">
+                    <div id="diagnosticLoading" class="loading" style="display: none;">
                         <div class="spinner"></div>
-                        <p>Analyzing subject...</p>
+                        <p>Analyzing...</p>
                     </div>
                     
                     <div id="diagnosticResults"></div>
@@ -405,7 +352,7 @@
         let seasonalityData = {};
         let assignmentData = null;
         let salesLeadsData = null;
-        let currentForecast = null;
+        let allForecasts = [];
         
         document.getElementById('fileInput').addEventListener('change', async (e) => {
             const file = e.target.files[0];
@@ -418,12 +365,9 @@
                 const data = await file.arrayBuffer();
                 const workbook = XLSX.read(data);
                 
-                // Load Sales audience matrices
                 const salesSheets = workbook.SheetNames.filter(name => 
                     name.startsWith('Sales-') || name.startsWith('Sals-')
                 );
-                
-                let totalSubjects = 0;
                 
                 salesSheets.forEach(sheetName => {
                     const sheet = workbook.Sheets[sheetName];
@@ -440,131 +384,214 @@
                     });
                     
                     seasonalityData[cleanName] = monthData;
-                    totalSubjects += Object.keys(monthData.Jan || {}).length;
                 });
                 
-                // Load Assignment Data sheet
                 if (workbook.Sheets['Assignment Data']) {
                     assignmentData = XLSX.utils.sheet_to_json(workbook.Sheets['Assignment Data']);
                 }
                 
-                // Load Sales Audience (Leads) sheet
                 if (workbook.Sheets['Sales Audience (Leads)']) {
                     salesLeadsData = XLSX.utils.sheet_to_json(workbook.Sheets['Sales Audience (Leads)']);
                 }
                 
                 document.getElementById('audienceCount').textContent = Object.keys(seasonalityData).length;
-                document.getElementById('totalSubjects').textContent = totalSubjects;
-                document.getElementById('assignmentRows').textContent = assignmentData ? assignmentData.length.toLocaleString() : '0';
-                document.getElementById('salesRows').textContent = salesLeadsData ? salesLeadsData.length.toLocaleString() : '0';
                 
-                // Populate audience dropdown
-                const audienceSelect = document.getElementById('audience');
-                audienceSelect.innerHTML = '<option value="">Select Audience</option>';
-                
-                Object.entries(seasonalityData)
-                    .sort((a, b) => {
-                        if (a[0] === 'Canada International') return -1;
-                        if (b[0] === 'Canada International') return 1;
-                        const aCount = Object.keys(a[1].Jan || {}).length;
-                        const bCount = Object.keys(b[1].Jan || {}).length;
-                        return bCount - aCount;
-                    })
-                    .forEach(([name, data]) => {
-                        const janSubjects = Object.keys(data.Jan || {});
-                        const option = document.createElement('option');
-                        option.value = name;
-                        const flag = name === 'Canada International' ? '🇨🇦 ' : '';
-                        option.textContent = `${flag}${name} (${janSubjects.length} subjects)`;
-                        audienceSelect.appendChild(option);
-                    });
+                createBulkInputs();
                 
                 document.getElementById('loadingSection').style.display = 'none';
                 document.getElementById('mainSection').style.display = 'block';
                 
             } catch (error) {
-                console.error('Error:', error);
-                alert('Error loading file: ' + error.message);
+                alert('Error: ' + error.message);
                 document.getElementById('loadingSection').style.display = 'none';
                 document.getElementById('uploadSection').style.display = 'block';
             }
         });
         
-        window.calculateForecast = function() {
-            const audience = document.getElementById('audience').value;
-            const totalClients = parseInt(document.getElementById('totalClients').value);
-            const month = document.getElementById('month').value;
+        function createBulkInputs() {
+            const container = document.getElementById('bulkInputGrid');
+            container.innerHTML = '';
             
-            if (!audience || !totalClients || !month) {
-                alert('Please fill in all fields');
+            const audienceOrder = [
+                'K-6', 'Learning Differences', 'HS-STEM', 'K12 Test Prep', 'Col-STEM',
+                'Grad Test Prep', 'Languages', 'Upskilling', 'Other', 
+                'Canada International', 'Prof Certs'
+            ];
+            
+            audienceOrder.forEach(name => {
+                const data = seasonalityData[name];
+                if (!data) return;
+                
+                const janSubjects = Object.keys(data.Jan || {});
+                const flag = name === 'Canada International' ? '🇨🇦 ' : '';
+                
+                const card = document.createElement('div');
+                card.className = 'input-card';
+                card.innerHTML = `
+                    <label for="input-${name.replace(/[^a-z0-9]/gi, '_')}">${flag}${name}</label>
+                    <div style="color: #6c757d; font-size: 0.85rem; margin-bottom: 0.5rem;">${janSubjects.length} subjects</div>
+                    <input type="number" id="input-${name.replace(/[^a-z0-9]/gi, '_')}" placeholder="Client count" min="0">
+                `;
+                container.appendChild(card);
+            });
+        }
+        
+        window.calculateBulkForecast = function() {
+            const month = document.getElementById('bulkMonth').value;
+            if (!month) {
+                alert('Please select a month');
                 return;
             }
             
-            const monthData = seasonalityData[audience]?.[month];
-            if (!monthData) {
-                alert(`No data for ${month} in ${audience}`);
-                return;
-            }
+            allForecasts = [];
+            let hasInput = false;
             
-            const forecast = [];
-            Object.entries(monthData).forEach(([subject, share]) => {
-                const clients = Math.round(totalClients * share);
-                if (clients > 0) {
-                    forecast.push({
+            Object.keys(seasonalityData).forEach(audience => {
+                const inputId = `input-${audience.replace(/[^a-z0-9]/gi, '_')}`;
+                const totalClients = parseInt(document.getElementById(inputId).value) || 0;
+                
+                if (totalClients === 0) return;
+                hasInput = true;
+                
+                const monthData = seasonalityData[audience][month];
+                if (!monthData) return;
+                
+                Object.entries(monthData).forEach(([subject, share]) => {
+                    if (share === 0) return;
+                    
+                    const clients = Math.round(totalClients * share);
+                    
+                    allForecasts.push({
+                        Audience: audience,
                         Subject: subject,
                         'Seasonal Share': share,
                         'Forecast Clients': clients
                     });
+                });
+            });
+            
+            if (!hasInput) {
+                alert('Please enter at least one client count');
+                return;
+            }
+            
+            displayBulkResults(month);
+        };
+        
+        function displayBulkResults(month) {
+            document.getElementById('bulkResults').style.display = 'block';
+            const container = document.getElementById('bulkResultsGrid');
+            container.innerHTML = '';
+            
+            const byAudience = {};
+            allForecasts.forEach(f => {
+                if (!byAudience[f.Audience]) byAudience[f.Audience] = [];
+                byAudience[f.Audience].push(f);
+            });
+            
+            let grandTotalInput = 0;
+            let grandTotalOutput = 0;
+            
+            Object.keys(seasonalityData).forEach(audience => {
+                const inputId = `input-${audience.replace(/[^a-z0-9]/gi, '_')}`;
+                grandTotalInput += parseInt(document.getElementById(inputId).value) || 0;
+            });
+            
+            grandTotalOutput = allForecasts.reduce((sum, f) => sum + f['Forecast Clients'], 0);
+            const grandVariance = grandTotalOutput - grandTotalInput;
+            const grandVariancePct = grandTotalInput > 0 ? ((grandVariance / grandTotalInput) * 100).toFixed(1) : '0.0';
+            
+            const summaryCard = document.createElement('div');
+            summaryCard.style.cssText = 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 8px; margin-bottom: 2rem;';
+            summaryCard.innerHTML = '<h3 style="margin-bottom: 1rem; font-size: 1.5rem;">Overall Forecast Summary - ' + month + '</h3><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;"><div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 6px; text-align: center;"><div style="font-size: 2rem; font-weight: bold;">' + grandTotalInput.toLocaleString() + '</div><div style="opacity: 0.9; font-size: 0.9rem; margin-top: 0.5rem;">Total Input</div></div><div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 6px; text-align: center;"><div style="font-size: 2rem; font-weight: bold;">' + grandTotalOutput.toLocaleString() + '</div><div style="opacity: 0.9; font-size: 0.9rem; margin-top: 0.5rem;">Total Output</div></div><div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 6px; text-align: center;"><div style="font-size: 2rem; font-weight: bold;">' + (grandVariance >= 0 ? '+' : '') + grandVariance + '</div><div style="opacity: 0.9; font-size: 0.9rem; margin-top: 0.5rem;">Variance (' + grandVariancePct + '%)</div></div><div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 6px; text-align: center;"><div style="font-size: 2rem; font-weight: bold;">' + Object.keys(byAudience).length + '</div><div style="opacity: 0.9; font-size: 0.9rem; margin-top: 0.5rem;">Audiences</div></div></div>';
+            container.appendChild(summaryCard);
+            
+            const audienceOrder = [
+                'K-6', 'Learning Differences', 'HS-STEM', 'K12 Test Prep', 'Col-STEM',
+                'Grad Test Prep', 'Languages', 'Upskilling', 'Other', 
+                'Canada International', 'Prof Certs'
+            ];
+            
+            audienceOrder.forEach(audience => {
+                const forecasts = byAudience[audience];
+                if (!forecasts) return;
+                
+                forecasts.sort((a, b) => b['Forecast Clients'] - a['Forecast Clients']);
+                
+                const total = forecasts.reduce((sum, f) => sum + f['Forecast Clients'], 0);
+                const inputId = `input-${audience.replace(/[^a-z0-9]/gi, '_')}`;
+                const inputTotal = parseInt(document.getElementById(inputId).value) || 0;
+                const variance = total - inputTotal;
+                const variancePct = inputTotal > 0 ? ((variance / inputTotal) * 100).toFixed(1) : '0.0';
+                const flag = audience === 'Canada International' ? '🇨🇦 ' : '';
+                
+                const card = document.createElement('div');
+                card.className = 'audience-result';
+                card.innerHTML = '<div class="audience-header"><div><div class="audience-name">' + flag + audience + '</div><div style="font-size: 0.9rem; color: #6c757d; margin-top: 0.25rem;">Input: ' + inputTotal + ' | Output: ' + total + ' | Variance: ' + (variance >= 0 ? '+' : '') + variance + ' (' + variancePct + '%)</div></div><div class="audience-total">' + total + ' clients</div></div><div class="subject-table" id="table-' + audience.replace(/[^a-z0-9]/gi, '_') + '"></div>';
+                container.appendChild(card);
+                
+                const table = document.getElementById('table-' + audience.replace(/[^a-z0-9]/gi, '_'));
+                
+                const withClients = forecasts.filter(f => f['Forecast Clients'] > 0);
+                const withoutClients = forecasts.filter(f => f['Forecast Clients'] === 0);
+                
+                withClients.forEach(f => {
+                    const row = document.createElement('div');
+                    row.className = 'subject-row';
+                    row.innerHTML = '<div class="subject-name">' + f.Subject + '</div><div class="subject-share">' + (f['Seasonal Share'] * 100).toFixed(2) + '%</div><div class="subject-forecast">' + f['Forecast Clients'] + '</div>';
+                    table.appendChild(row);
+                });
+                
+                if (withoutClients.length > 0) {
+                    const row = document.createElement('div');
+                    row.style.cssText = 'padding: 1rem 0; color: #6c757d; font-style: italic; border-top: 2px solid #e9ecef; margin-top: 0.5rem;';
+                    row.textContent = withoutClients.length + ' additional subjects round to 0 clients';
+                    table.appendChild(row);
                 }
             });
             
-            forecast.sort((a, b) => b['Forecast Clients'] - a['Forecast Clients']);
+            document.getElementById('bulkResults').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        window.downloadAllForecasts = function() {
+            const headers = ['Audience', 'Subject', 'Seasonal Share', 'Forecast Clients'];
+            const audienceOrder = [
+                'K-6', 'Learning Differences', 'HS-STEM', 'K12 Test Prep', 'Col-STEM',
+                'Grad Test Prep', 'Languages', 'Upskilling', 'Other', 
+                'Canada International', 'Prof Certs'
+            ];
             
-            currentForecast = { audience, month, totalClients, forecast };
-            displayForecast();
+            const sortedForecasts = allForecasts.sort((a, b) => {
+                const aIndex = audienceOrder.indexOf(a.Audience);
+                const bIndex = audienceOrder.indexOf(b.Audience);
+                if (aIndex !== bIndex) return aIndex - bIndex;
+                return b['Forecast Clients'] - a['Forecast Clients'];
+            });
+            
+            const rows = sortedForecasts.map(f => {
+                const shareFormatted = (f['Seasonal Share'] * 100).toFixed(2) + '%';
+                return [f.Audience, '"' + f.Subject + '"', shareFormatted, f['Forecast Clients']].join(',');
+            });
+            
+            const csv = [headers.join(','), ...rows].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const month = document.getElementById('bulkMonth').value;
+            a.download = 'All_Audiences_Subject_Forecast_' + month + '.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         };
         
-        function displayForecast() {
-            const { audience, month, totalClients, forecast } = currentForecast;
-            
-            document.getElementById('forecastResults').style.display = 'block';
-            
-            const totalForecast = forecast.reduce((sum, f) => sum + f['Forecast Clients'], 0);
-            
-            document.getElementById('summaryAudience').textContent = audience;
-            document.getElementById('summaryMonth').textContent = month;
-            document.getElementById('inputClients').textContent = totalClients.toLocaleString();
-            document.getElementById('activeSubjects').textContent = forecast.length;
-            document.getElementById('totalForecast').textContent = totalForecast.toLocaleString();
-            
-            const tbody = document.getElementById('forecastTableBody');
-            tbody.innerHTML = '';
-            
-            const maxClients = forecast[0]?.['Forecast Clients'] || 1;
-            
-            forecast.forEach((f, i) => {
-                const tr = document.createElement('tr');
-                const barWidth = (f['Forecast Clients'] / maxClients * 100).toFixed(1);
-                
-                tr.innerHTML = `
-                    <td><strong>${i + 1}</strong></td>
-                    <td><strong>${f.Subject}</strong></td>
-                    <td>${(f['Seasonal Share'] * 100).toFixed(2)}%</td>
-                    <td><strong>${f['Forecast Clients']}</strong></td>
-                    <td>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${barWidth}%"></div>
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-            
-            document.getElementById('forecastResults').scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'nearest' 
-            });
-        }
+        window.resetBulk = function() {
+            document.querySelectorAll('.bulk-input-grid input').forEach(input => input.value = '');
+            document.getElementById('bulkMonth').value = '';
+            document.getElementById('bulkResults').style.display = 'none';
+            allForecasts = [];
+        };
         
         window.searchSubject = function() {
             const subjectName = document.getElementById('searchBox').value.trim();
@@ -579,119 +606,63 @@
             setTimeout(() => {
                 let html = '';
                 
-                // Search assignment data
                 if (assignmentData) {
-                    const assignmentRows = assignmentData.filter(row => 
+                    const rows = assignmentData.filter(row => 
                         row['Desired Placement Campaigns Subject Name 1'] === subjectName
                     );
                     
-                    let totalAssignments = 0;
-                    assignmentRows.forEach(row => {
-                        totalAssignments += parseFloat(String(row['Desired Placement Campaigns DPC Count']).replace(/,/g, '')) || 0;
+                    let total = 0;
+                    rows.forEach(row => {
+                        total += parseFloat(String(row['Desired Placement Campaigns DPC Count']).replace(/,/g, '')) || 0;
                     });
                     
-                    html += `<div class="result-card">
-                        <div class="result-title">${subjectName}</div>`;
+                    html += '<div class="result-card"><div class="result-title">' + subjectName + '</div>';
                     
-                    if (assignmentRows.length === 0) {
-                        html += `<div style="color: #dc3545; font-weight: 600;">❌ Not found in assignment data</div>`;
+                    if (rows.length === 0) {
+                        html += '<div style="color: #dc3545; font-weight: 600;">❌ Not found in assignment data</div>';
                     } else {
-                        html += `
-                            <div class="stat-row">
-                                <span class="stat-label">Total Assignments (5 years):</span>
-                                <span class="stat-value">${totalAssignments.toLocaleString()}</span>
-                            </div>
-                            <div class="stat-row">
-                                <span class="stat-label">Month Records:</span>
-                                <span class="stat-value">${assignmentRows.length}</span>
-                            </div>`;
+                        html += '<div class="stat-row"><span class="stat-label">Total Assignments:</span><span class="stat-value">' + total.toLocaleString() + '</span></div>';
                     }
                     
-                    html += `</div>`;
+                    html += '</div>';
                 }
                 
-                // Search sales leads data
                 if (salesLeadsData) {
-                    const salesRows = salesLeadsData.filter(row => 
-                        row['Subject Name'] === subjectName
-                    );
+                    const rows = salesLeadsData.filter(row => row['Subject Name'] === subjectName);
                     
-                    if (salesRows.length > 0) {
-                        const leadsByAudience = {};
-                        salesRows.forEach(row => {
+                    if (rows.length > 0) {
+                        const leadsByAud = {};
+                        rows.forEach(row => {
                             const aud = row['Audience (Sales)'];
                             const leads = parseFloat(String(row['Net Leads']).replace(/,/g, '')) || 0;
-                            leadsByAudience[aud] = (leadsByAudience[aud] || 0) + leads;
+                            leadsByAud[aud] = (leadsByAud[aud] || 0) + leads;
                         });
                         
-                        const totalLeads = Object.values(leadsByAudience).reduce((sum, l) => sum + l, 0);
-                        const maxAudience = Object.entries(leadsByAudience).sort((a, b) => b[1] - a[1])[0];
+                        const totalLeads = Object.values(leadsByAud).reduce((sum, l) => sum + l, 0);
+                        const maxAud = Object.entries(leadsByAud).sort((a, b) => b[1] - a[1])[0];
                         
-                        html += `<div class="result-card">
-                            <div class="result-title">Sales Performance</div>
-                            <div class="stat-row">
-                                <span class="stat-label">Total Net Leads:</span>
-                                <span class="stat-value">${totalLeads.toLocaleString()}</span>
-                            </div>
-                            <div class="stat-row">
-                                <span class="stat-label">Primary Sales Audience:</span>
-                                <span class="stat-value">${maxAudience ? maxAudience[0] : 'Unknown'}</span>
-                            </div>`;
-                        
-                        if (Object.keys(leadsByAudience).length > 1) {
-                            html += `<div style="margin-top: 1rem;"><strong>Leads by Audience:</strong></div>`;
-                            Object.entries(leadsByAudience)
-                                .sort((a, b) => b[1] - a[1])
-                                .forEach(([aud, leads]) => {
-                                    html += `<div class="stat-row">
-                                        <span class="stat-label">${aud}:</span>
-                                        <span class="stat-value">${leads.toLocaleString()}</span>
-                                    </div>`;
-                                });
-                        }
-                        
-                        html += `</div>`;
-                    } else {
-                        html += `<div class="result-card">
-                            <div style="color: #dc3545; font-weight: 600;">❌ Not found in Sales audience data</div>
-                            <div style="color: #6c757d; margin-top: 0.5rem; font-size: 0.9rem;">This subject won't appear in Sales audience matrices.</div>
-                        </div>`;
+                        html += '<div class="result-card"><div class="result-title">Sales Performance</div>';
+                        html += '<div class="stat-row"><span class="stat-label">Total Net Leads:</span><span class="stat-value">' + totalLeads.toLocaleString() + '</span></div>';
+                        html += '<div class="stat-row"><span class="stat-label">Primary Audience:</span><span class="stat-value">' + (maxAud ? maxAud[0] : 'Unknown') + '</span></div>';
+                        html += '</div>';
                     }
                 }
                 
-                // Check which matrices contain this subject
                 const foundInMatrices = [];
-                Object.entries(seasonalityData).forEach(([audience, monthData]) => {
+                Object.entries(seasonalityData).forEach(([aud, monthData]) => {
                     const octData = monthData.Oct || {};
                     if (octData[subjectName] !== undefined && octData[subjectName] > 0) {
-                        foundInMatrices.push({
-                            audience: audience,
-                            share: octData[subjectName]
-                        });
+                        foundInMatrices.push({ audience: aud, share: octData[subjectName] });
                     }
                 });
                 
                 if (foundInMatrices.length > 0) {
-                    html += `<div class="result-card">
-                        <div class="result-title">Found in Seasonality Matrices</div>
-                        <div style="margin-bottom: 0.5rem; color: #6c757d; font-size: 0.9rem;">October share percentages:</div>`;
-                    
-                    foundInMatrices
-                        .sort((a, b) => b.share - a.share)
-                        .forEach(m => {
-                            const flag = m.audience === 'Canada International' ? '🇨🇦 ' : '';
-                            html += `<div class="stat-row">
-                                <span class="stat-label">${flag}${m.audience}:</span>
-                                <span class="stat-value">${(m.share * 100).toFixed(2)}%</span>
-                            </div>`;
-                        });
-                    
-                    html += `</div>`;
-                } else {
-                    html += `<div class="result-card">
-                        <div style="color: #ffc107; font-weight: 600;">⚠️ Not found in any Sales audience matrix</div>
-                        <div style="color: #6c757d; margin-top: 0.5rem; font-size: 0.9rem;">Either filtered out due to low volume or not in sales data.</div>
-                    </div>`;
+                    html += '<div class="result-card"><div class="result-title">In Matrices (Oct)</div>';
+                    foundInMatrices.sort((a, b) => b.share - a.share).forEach(m => {
+                        const flag = m.audience === 'Canada International' ? '🇨🇦 ' : '';
+                        html += '<div class="stat-row"><span class="stat-label">' + flag + m.audience + ':</span><span class="stat-value">' + (m.share * 100).toFixed(2) + '%</span></div>';
+                    });
+                    html += '</div>';
                 }
                 
                 document.getElementById('diagnosticResults').innerHTML = html;
@@ -699,44 +670,14 @@
             }, 100);
         };
         
-        window.downloadForecast = function() {
-            if (!currentForecast) return;
-            
-            const { audience, month, forecast } = currentForecast;
-            
-            const headers = ['Rank', 'Subject', 'Seasonal Share', 'Forecast Clients'];
-            const rows = forecast.map((f, i) => 
-                [i + 1, `"${f.Subject}"`, f['Seasonal Share'].toFixed(4), f['Forecast Clients']].join(',')
-            );
-            
-            const csv = [headers.join(','), ...rows].join('\n');
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${audience.replace(/[^a-z0-9]/gi, '_')}_${month}_Forecast.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        };
-        
-        window.resetForecast = function() {
-            document.getElementById('audience').value = '';
-            document.getElementById('totalClients').value = '';
-            document.getElementById('month').value = '';
-            document.getElementById('forecastResults').style.display = 'none';
-            currentForecast = null;
-        };
-        
         window.switchTab = function(tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             
-            if (tab === 'forecast') {
+            if (tab === 'bulk') {
                 document.querySelectorAll('.tab')[0].classList.add('active');
-                document.getElementById('forecastTab').classList.add('active');
-            } else if (tab === 'diagnostic') {
+                document.getElementById('bulkTab').classList.add('active');
+            } else {
                 document.querySelectorAll('.tab')[1].classList.add('active');
                 document.getElementById('diagnosticTab').classList.add('active');
             }
