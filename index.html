@@ -1,4 +1,97 @@
-<!DOCTYPE html>
+    <script type="module">
+        const XLSX = await import('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm');
+        
+        let seasonalityData = {};
+        let currentForecast = null;
+        
+        document.getElementById('fileInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            document.getElementById('uploadSection').style.display = 'none';
+            document.getElementById('loadingSection').style.display = 'block';
+            
+            try {
+                const data = await file.arrayBuffer();
+                const workbook = XLSX.read(data);
+                
+                // Filter to Sales audiences (including InternationalCA)
+                const salesSheets = workbook.SheetNames.filter(name => 
+                    name.startsWith('Sales-') || name.startsWith('Sals-')
+                );
+                
+                if (salesSheets.length === 0) {
+                    alert('No Sales audience sheets found.');
+                    document.getElementById('loadingSection').style.display = 'none';
+                    document.getElementById('uploadSection').style.display = 'block';
+                    return;
+                }
+                
+                let totalSubjects = 0;
+                
+                // Load each Sales audience
+                salesSheets.forEach(sheetName => {
+                    const sheet = workbook.Sheets[sheetName];
+                    const sheetData = XLSX.utils.sheet_to_json(sheet);
+                    
+                    // Clean audience name
+                    let cleanName = sheetName.replace(/^Sales-|^Sals-/, '');
+                    
+                    // Rename InternationalCA to Canada International
+                    if (cleanName === 'InternationalCA') {
+                        cleanName = 'Canada International';
+                    }
+                    
+                    // Convert to month-keyed object
+                    const monthData = {};
+                    sheetData.forEach(row => {
+                        const month = row.Month;
+                        delete row.Month;
+                        monthData[month] = row;
+                    });
+                    
+                    seasonalityData[cleanName] = monthData;
+                    
+                    const janSubjects = Object.keys(monthData.Jan || {});
+                    totalSubjects += janSubjects.length;
+                });
+                
+                document.getElementById('audienceCount').textContent = Object.keys(seasonalityData).length;
+                document.getElementById('totalSubjects').textContent = totalSubjects;
+                
+                // Populate dropdown - Canada International first
+                const audienceSelect = document.getElementById('audience');
+                audienceSelect.innerHTML = '<option value="">Select Audience</option>';
+                
+                Object.entries(seasonalityData)
+                    .sort((a, b) => {
+                        // Canada International first
+                        if (a[0] === 'Canada International') return -1;
+                        if (b[0] === 'Canada International') return 1;
+                        // Then by subject count
+                        const aCount = Object.keys(a[1].Jan || {}).length;
+                        const bCount = Object.keys(b[1].Jan || {}).length;
+                        return bCount - aCount;
+                    })
+                    .forEach(([name, data]) => {
+                        const janSubjects = Object.keys(data.Jan || {});
+                        const option = document.createElement('option');
+                        option.value = name;
+                        const flag = name === 'Canada International' ? '🇨🇦 ' : '';
+                        option.textContent = `${flag}${name} (${janSubjects.length} subjects)`;
+                        audienceSelect.appendChild(option);
+                    });
+                
+                document.getElementById('loadingSection').style.display = 'none';
+                document.getElementById('calculatorSection').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error loading file: ' + error.message);
+                document.getElementById('loadingSection').style.display = 'none';
+                document.getElementById('uploadSection').style.display = 'block';
+            }
+        });<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -201,13 +294,13 @@
         <div class="content">
             <div id="uploadSection">
                 <div class="info">
-                    <strong>📋 Corrected Data:</strong> Upload the Subject Audience Seasonality Matrix which segments subjects into the correct Sales Audiences and includes subject seasonality by month. This version has been recalculated from raw assignment counts (Calculus > Trigonometry ✅).
+                    <strong>📋 Single File Solution:</strong> Upload the complete Subject Audience Seasonality Matrix which includes all 11 Sales audiences (10 subject audiences + 🇨🇦 Canada International) with subject seasonality by month.
                 </div>
                 
                 <div class="upload-area" onclick="document.getElementById('fileInput').click()">
                     <div style="font-size: 4rem; margin-bottom: 1rem;">📊</div>
-                    <h3>Upload Corrected Seasonality Matrix</h3>
-                    <p style="color: #6c757d; margin-top: 0.5rem;">Subject Audience Seasonality Matrix 3.xlsx</p>
+                    <h3>Upload Complete Seasonality Matrix</h3>
+                    <p style="color: #6c757d; margin-top: 0.5rem;">Subject Audience Seasonality Matrix 4.xlsx</p>
                     <input type="file" id="fileInput" class="file-input" accept=".xlsx">
                 </div>
             </div>
@@ -219,7 +312,7 @@
             
             <div id="calculatorSection" style="display: none;">
                 <div class="success">
-                    <strong>✅ Loaded Corrected Data!</strong> Found <span id="audienceCount">0</span> Sales audiences with <span id="totalSubjects">0</span> total subjects. Calculus > Trigonometry verified ✅
+                    <strong>✅ Loaded Corrected Data!</strong> Found <span id="audienceCount">0</span> Sales audiences (including 🇨🇦 Canada International) with <span id="totalSubjects">0</span> total subjects.
                 </div>
                 
                 <div class="input-section">
