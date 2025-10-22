@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subject Diagnostic Tool</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        .header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        .content { padding: 2rem; }
+        .search-box {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        .search-box:focus {
+            outline: none;
+            border-color: #11998e;
+        }
+        .btn {
+            padding: 0.75rem 2rem;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(17, 153, 142, 0.4); }
+        .result-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+        .result-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .stat-label {
+            color: #6c757d;
+        }
+        .stat-value {
+            font-weight: bold;
+            color: #667eea;
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            display: none;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            background: #f8f9fa;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+        .upload-area:hover { background: #e9ecef; }
+        .file-input { display: none; }
+        .status { margin-top: 0.5rem; font-size: 0.9rem; color: #6c757d; }
+        .status.loaded { color: #28a745; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Subject Diagnostic Tool</h1>
+            <p>Check assignment volume and Sales audience assignment</p>
+        </div>
+        
+        <div class="content">
+            <div id="uploadSection">
+                <div class="upload-area" onclick="document.getElementById('assignmentFile').click()">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📊</div>
+                    <div style="font-weight: 600;">Assignment Data</div>
+                    <input type="file" id="assignmentFile" class="file-input" accept=".csv">
+                    <div class="status" id="assignmentStatus">Not loaded</div>
+                </div>
+                
+                <div class="upload-area" onclick="document.getElementById('salesFile').click()">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📋</div>
+                    <div style="font-weight: 600;">Sales Audiences</div>
+                    <input type="file" id="salesFile" class="file-input" accept=".csv">
+                    <div class="status" id="salesStatus">Not loaded</div>
+                </div>
+            </div>
+            
+            <div id="searchSection" style="display: none;">
+                <input type="text" id="searchBox" class="search-box" placeholder="Enter subject name (e.g., High School Chemistry)">
+                <button class="btn" onclick="searchSubject()">🔍 Search Subject</button>
+                
+                <div id="loadingSection" class="loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing...</p>
+                </div>
+                
+                <div id="resultsSection"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        const Papa = await import('https://cdn.jsdelivr.net/npm/papaparse@5.4.1/+esm');
+        
+        let assignmentData = null;
+        let salesData = null;
+        
+        document.getElementById('assignmentFile').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const text = await file.text();
+            assignmentData = Papa.default.parse(text, { header: true, skipEmptyLines: true });
+            document.getElementById('assignmentStatus').textContent = `✅ ${assignmentData.data.length.toLocaleString()} rows`;
+            document.getElementById('assignmentStatus').classList.add('loaded');
+            checkReady();
+        });
+        
+        document.getElementById('salesFile').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const text = await file.text();
+            salesData = Papa.default.parse(text, { header: true, skipEmptyLines: true });
+            document.getElementById('salesStatus').textContent = `✅ ${salesData.data.length.toLocaleString()} rows`;
+            document.getElementById('salesStatus').classList.add('loaded');
+            checkReady();
+        });
+        
+        function checkReady() {
+            if (assignmentData && salesData) {
+                document.getElementById('uploadSection').style.display = 'none';
+                document.getElementById('searchSection').style.display = 'block';
+            }
+        }
+        
+        window.searchSubject = function() {
+            const subjectName = document.getElementById('searchBox').value.trim();
+            if (!subjectName) {
+                alert('Please enter a subject name');
+                return;
+            }
+            
+            document.getElementById('loadingSection').style.display = 'block';
+            document.getElementById('resultsSection').innerHTML = '';
+            
+            setTimeout(() => {
+                // Search assignment data
+                const assignmentRows = assignmentData.data.filter(row => 
+                    row['Desired Placement Campaigns Subject Name 1'] === subjectName
+                );
+                
+                let totalAssignments = 0;
+                assignmentRows.forEach(row => {
+                    totalAssignments += parseFloat(String(row['Desired Placement Campaigns DPC Count']).replace(/,/g, '')) || 0;
+                });
+                
+                // Search sales data
+                const salesRows = salesData.data.filter(row => 
+                    row['Subject Name'] === subjectName
+                );
+                
+                const leadsByAudience = {};
+                salesRows.forEach(row => {
+                    const aud = row['Audience (Sales)'];
+                    const leads = parseFloat(String(row['Net Leads']).replace(/,/g, '')) || 0;
+                    leadsByAudience[aud] = (leadsByAudience[aud] || 0) + leads;
+                });
+                
+                const totalLeads = Object.values(leadsByAudience).reduce((sum, l) => sum + l, 0);
+                const maxAudience = Object.entries(leadsByAudience).sort((a, b) => b[1] - a[1])[0];
+                
+                // Display results
+                let html = `<div class="result-card">
+                    <div class="result-title">${subjectName}</div>`;
+                
+                if (assignmentRows.length === 0) {
+                    html += `<div style="color: #dc3545; font-weight: 600;">❌ Not found in assignment data</div>`;
+                } else {
+                    html += `
+                        <div class="stat-row">
+                            <span class="stat-label">Total Assignments (5 years):</span>
+                            <span class="stat-value">${totalAssignments.toLocaleString()}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Month Records:</span>
+                            <span class="stat-value">${assignmentRows.length}</span>
+                        </div>`;
+                }
+                
+                if (salesRows.length === 0) {
+                    html += `<div style="color: #dc3545; font-weight: 600; margin-top: 1rem;">❌ Not found in Sales audience data</div>
+                        <div style="color: #6c757d; margin-top: 0.5rem; font-size: 0.9rem;">This subject won't appear in any Sales audience matrix because it has no Net Leads data.</div>`;
+                } else {
+                    html += `
+                        <div class="stat-row" style="margin-top: 1rem; border-top: 2px solid #667eea; padding-top: 1rem;">
+                            <span class="stat-label">Total Net Leads:</span>
+                            <span class="stat-value">${totalLeads.toLocaleString()}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Assigned Sales Audience:</span>
+                            <span class="stat-value">${maxAudience ? maxAudience[0] : 'Unknown'}</span>
+                        </div>`;
+                    
+                    if (Object.keys(leadsByAudience).length > 1) {
+                        html += `<div style="margin-top: 1rem;"><strong>Leads by Audience:</strong></div>`;
+                        Object.entries(leadsByAudience)
+                            .sort((a, b) => b[1] - a[1])
+                            .forEach(([aud, leads]) => {
+                                html += `<div class="stat-row">
+                                    <span class="stat-label">${aud}:</span>
+                                    <span class="stat-value">${leads.toLocaleString()}</span>
+                                </div>`;
+                            });
+                    }
+                }
+                
+                html += `</div>`;
+                
+                document.getElementById('resultsSection').innerHTML = html;
+                document.getElementById('loadingSection').style.display = 'none';
+            }, 100);
+        };
+    </script>
+</body>
+</html>
