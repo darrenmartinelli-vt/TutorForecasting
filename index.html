@@ -8,7 +8,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #00BFA5 0%, #00ACC1 100%);
             min-height: 100vh;
             padding: 2rem;
         }
@@ -20,7 +20,7 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #00BFA5 0%, #00ACC1 100%);
             color: white;
             padding: 2rem;
             text-align: center;
@@ -44,12 +44,12 @@
             color: #6c757d;
             transition: all 0.3s ease;
         }
-        .tab:hover { color: #667eea; }
-        .tab.active { color: #667eea; border-bottom-color: #667eea; }
+        .tab:hover { color: #00BFA5; }
+        .tab.active { color: #00BFA5; border-bottom-color: #00BFA5; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .upload-area {
-            border: 3px dashed #667eea;
+            border: 3px dashed #00BFA5;
             border-radius: 12px;
             padding: 3rem;
             text-align: center;
@@ -84,7 +84,7 @@
             background: #f8f9fa;
             padding: 1.5rem;
             border-radius: 8px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #00BFA5;
         }
         .input-card label {
             display: block;
@@ -101,7 +101,7 @@
         }
         .input-card input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #00BFA5;
         }
         .month-selector {
             background: #f8f9fa;
@@ -139,7 +139,7 @@
             box-shadow: 0 4px 12px rgba(17, 153, 142, 0.4);
         }
         .btn-secondary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #00BFA5 0%, #00ACC1 100%);
             margin-top: 1rem;
             font-size: 1.1rem;
         }
@@ -151,7 +151,7 @@
             background: #f8f9fa;
             border-radius: 8px;
             padding: 1.5rem;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #00BFA5;
         }
         .audience-header {
             display: flex;
@@ -169,7 +169,7 @@
         .audience-total {
             font-size: 1.5rem;
             font-weight: bold;
-            color: #667eea;
+            color: #00BFA5;
         }
         .subject-table {
             width: 100%;
@@ -195,7 +195,7 @@
         }
         .subject-forecast {
             font-weight: bold;
-            color: #667eea;
+            color: #00BFA5;
             text-align: right;
         }
         .loading {
@@ -206,7 +206,7 @@
             width: 50px;
             height: 50px;
             border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+            border-top: 4px solid #00BFA5;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 1rem;
@@ -219,7 +219,7 @@
             width: 100%;
             padding: 1rem;
             font-size: 1.1rem;
-            border: 2px solid #667eea;
+            border: 2px solid #00BFA5;
             border-radius: 8px;
             margin-bottom: 1rem;
         }
@@ -232,7 +232,7 @@
             padding: 1.5rem;
             border-radius: 8px;
             margin-bottom: 1rem;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #00BFA5;
         }
         .result-title {
             font-weight: bold;
@@ -249,7 +249,7 @@
         .stat-label { color: #6c757d; }
         .stat-value {
             font-weight: bold;
-            color: #667eea;
+            color: #00BFA5;
         }
         @media (max-width: 768px) {
             .bulk-input-grid { grid-template-columns: 1fr; }
@@ -261,7 +261,7 @@
     <div class="container">
         <div class="header">
             <h1>🎯 Sales Audience Forecast & Diagnostic Tool</h1>
-            <p>Bulk forecasting for 11 audiences (Normal rounding: 99% accuracy)</p>
+            <p>Bulk forecasting for 11 audiences (Grouped display: small subjects expandable)</p>
         </div>
         
         <div class="content">
@@ -295,7 +295,7 @@
                 
                 <div id="bulkTab" class="tab-content active">
                     <div class="info">
-                        <strong>📊 Rounding Method:</strong> Normal rounding (0.49→0, 0.50→1). Shows all subjects including 0s. Totals match input within 0.5-2%.
+                        <strong>📊 Display Method:</strong> Subjects with ≥1 forecasted client shown individually. Small subjects (0 clients) grouped into expandable "Other Subjects" line. Click to see full list and compare to tutor pools. Totals match input within 0.5-2%.
                     </div>
                     
                     <div class="month-selector">
@@ -317,9 +317,31 @@
                         </select>
                     </div>
                     
+                    <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 1rem; margin-bottom: 2rem; border-radius: 4px;">
+                        <strong>⚡ Quick Input from Google Sheets:</strong>
+                        <p style="margin: 0.5rem 0; color: #856404;">Paste 11 values (one per line) from Google Sheets to auto-fill all audiences</p>
+                        <textarea id="pasteArea" style="width: 100%; padding: 0.75rem; border: 2px solid #ffc107; border-radius: 6px; font-size: 1rem; margin-top: 0.5rem; font-family: monospace;" rows="3" placeholder="Paste column from Google Sheets here (11 values)"></textarea>
+                        <button class="btn" style="margin-top: 0.5rem; font-size: 1rem; padding: 0.75rem;" onclick="pasteValues()">📋 Auto-Fill from Paste</button>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+                        <label for="weekLabel" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #333;">Week Label (optional)</label>
+                        <input type="text" id="weekLabel" style="width: 100%; padding: 0.75rem; border: 2px solid #e9ecef; border-radius: 6px; font-size: 1rem;" placeholder="e.g., Week of Oct 28">
+                    </div>
+                    
                     <div class="bulk-input-grid" id="bulkInputGrid"></div>
                     
-                    <button class="btn" onclick="calculateBulkForecast()">🚀 Calculate All Forecasts</button>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+                        <button class="btn" style="font-size: 1rem; padding: 0.75rem;" onclick="addWeekToQueue()">➕ Add Week to Multi-Week Forecast</button>
+                        <button class="btn" style="font-size: 1rem; padding: 0.75rem; background: linear-gradient(135deg, #00BFA5 0%, #00ACC1 100%);" onclick="clearCurrentInputs()">🔄 Clear Inputs</button>
+                    </div>
+                    
+                    <div id="weekQueue" style="display: none; background: #e7f3ff; border-left: 4px solid #2196F3; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem; color: #1976D2;">📅 Multi-Week Forecast Queue</h3>
+                        <div id="weekList"></div>
+                    </div>
+                    
+                    <button class="btn" onclick="calculateBulkForecast()">🚀 Calculate Forecast</button>
                     
                     <div id="bulkResults" style="display: none; margin-top: 2rem;">
                         <div style="margin-bottom: 2rem;">
@@ -353,6 +375,12 @@
         let assignmentData = null;
         let salesLeadsData = null;
         let allForecasts = [];
+        let weekQueue = [];
+        const audienceOrder = [
+            'K-6', 'Learning Differences', 'HS-STEM', 'K12 Test Prep', 'Col-STEM',
+            'Grad Test Prep', 'Languages', 'Upskilling', 'Other', 
+            'Canada International', 'Prof Certs'
+        ];
         
         document.getElementById('fileInput').addEventListener('change', async (e) => {
             const file = e.target.files[0];
@@ -408,15 +436,133 @@
             }
         });
         
+        window.pasteValues = function() {
+            const pasteText = document.getElementById('pasteArea').value.trim();
+            if (!pasteText) {
+                alert('Please paste values first');
+                return;
+            }
+            
+            const values = pasteText.split(/[\n\t,]+/).map(v => v.trim()).filter(v => v !== '');
+            
+            if (values.length !== 11) {
+                alert(`Expected 11 values but got ${values.length}. Please paste exactly 11 values (one for each audience).`);
+                return;
+            }
+            
+            audienceOrder.forEach((name, index) => {
+                const inputId = `input-${name.replace(/[^a-z0-9]/gi, '_')}`;
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.value = values[index];
+                }
+            });
+            
+            document.getElementById('pasteArea').value = '';
+            alert('✅ Values auto-filled successfully!');
+        };
+        
+        window.addWeekToQueue = function() {
+            const month = document.getElementById('bulkMonth').value;
+            if (!month) {
+                alert('Please select a month first');
+                return;
+            }
+            
+            const weekLabel = document.getElementById('weekLabel').value.trim() || `Week ${weekQueue.length + 1}`;
+            const weekData = { label: weekLabel, month: month, audiences: {} };
+            let hasData = false;
+            
+            audienceOrder.forEach(name => {
+                const inputId = `input-${name.replace(/[^a-z0-9]/gi, '_')}`;
+                const value = parseInt(document.getElementById(inputId).value) || 0;
+                if (value > 0) {
+                    weekData.audiences[name] = value;
+                    hasData = true;
+                }
+            });
+            
+            if (!hasData) {
+                alert('Please enter at least one client count');
+                return;
+            }
+            
+            weekQueue.push(weekData);
+            updateWeekQueueDisplay();
+            clearCurrentInputs();
+            
+            document.getElementById('weekLabel').value = '';
+        };
+        
+        window.clearCurrentInputs = function() {
+            audienceOrder.forEach(name => {
+                const inputId = `input-${name.replace(/[^a-z0-9]/gi, '_')}`;
+                const input = document.getElementById(inputId);
+                if (input) input.value = '';
+            });
+        };
+        
+        function updateWeekQueueDisplay() {
+            const queueDiv = document.getElementById('weekQueue');
+            const listDiv = document.getElementById('weekList');
+            
+            if (weekQueue.length === 0) {
+                queueDiv.style.display = 'none';
+                return;
+            }
+            
+            queueDiv.style.display = 'block';
+            listDiv.innerHTML = '';
+            
+            weekQueue.forEach((week, index) => {
+                const total = Object.values(week.audiences).reduce((sum, v) => sum + v, 0);
+                const audienceCount = Object.keys(week.audiences).length;
+                
+                const weekCard = document.createElement('div');
+                weekCard.style.cssText = 'background: white; padding: 1rem; border-radius: 6px; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;';
+                weekCard.innerHTML = `
+                    <div>
+                        <strong>${week.label}</strong> - ${week.month}
+                        <div style="font-size: 0.85rem; color: #6c757d; margin-top: 0.25rem;">
+                            ${audienceCount} audiences, ${total.toLocaleString()} total clients
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button onclick="editWeek(${index})" style="padding: 0.5rem 1rem; background: #00BFA5; color: white; border: none; border-radius: 4px; cursor: pointer;">Edit</button>
+                        <button onclick="deleteWeek(${index})" style="padding: 0.5rem 1rem; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Delete</button>
+                    </div>
+                `;
+                listDiv.appendChild(weekCard);
+            });
+        }
+        
+        window.editWeek = function(index) {
+            const week = weekQueue[index];
+            
+            document.getElementById('bulkMonth').value = week.month;
+            document.getElementById('weekLabel').value = week.label;
+            
+            clearCurrentInputs();
+            Object.entries(week.audiences).forEach(([name, value]) => {
+                const inputId = `input-${name.replace(/[^a-z0-9]/gi, '_')}`;
+                const input = document.getElementById(inputId);
+                if (input) input.value = value;
+            });
+            
+            weekQueue.splice(index, 1);
+            updateWeekQueueDisplay();
+        };
+        
+        window.deleteWeek = function(index) {
+            if (confirm(`Delete "${weekQueue[index].label}"?`)) {
+                weekQueue.splice(index, 1);
+                updateWeekQueueDisplay();
+            }
+        };
+        
         function createBulkInputs() {
             const container = document.getElementById('bulkInputGrid');
             container.innerHTML = '';
-            
-            const audienceOrder = [
-                'K-6', 'Learning Differences', 'HS-STEM', 'K12 Test Prep', 'Col-STEM',
-                'Grad Test Prep', 'Languages', 'Upskilling', 'Other', 
-                'Canada International', 'Prof Certs'
-            ];
             
             audienceOrder.forEach(name => {
                 const data = seasonalityData[name];
@@ -443,125 +589,269 @@
                 return;
             }
             
-            allForecasts = [];
-            let hasInput = false;
+            let weeksToProcess = [];
             
-            Object.keys(seasonalityData).forEach(audience => {
-                const inputId = `input-${audience.replace(/[^a-z0-9]/gi, '_')}`;
-                const totalClients = parseInt(document.getElementById(inputId).value) || 0;
-                
-                if (totalClients === 0) return;
-                hasInput = true;
-                
-                const monthData = seasonalityData[audience][month];
-                if (!monthData) return;
-                
-                Object.entries(monthData).forEach(([subject, share]) => {
-                    if (share === 0) return;
-                    
-                    const clients = Math.round(totalClients * share);
-                    
-                    allForecasts.push({
-                        Audience: audience,
-                        Subject: subject,
-                        'Seasonal Share': share,
-                        'Forecast Clients': clients
-                    });
-                });
+            let hasCurrentInput = false;
+            const currentWeekData = { 
+                label: document.getElementById('weekLabel').value.trim() || 'Current Week', 
+                month: month, 
+                audiences: {} 
+            };
+            
+            audienceOrder.forEach(name => {
+                const inputId = `input-${name.replace(/[^a-z0-9]/gi, '_')}`;
+                const value = parseInt(document.getElementById(inputId).value) || 0;
+                if (value > 0) {
+                    currentWeekData.audiences[name] = value;
+                    hasCurrentInput = true;
+                }
             });
             
-            if (!hasInput) {
-                alert('Please enter at least one client count');
+            if (weekQueue.length > 0) {
+                weeksToProcess = [...weekQueue];
+                if (hasCurrentInput) {
+                    weeksToProcess.push(currentWeekData);
+                }
+            } else if (hasCurrentInput) {
+                weeksToProcess = [currentWeekData];
+            } else {
+                alert('Please enter at least one client count or add weeks to the queue');
                 return;
             }
             
-            displayBulkResults(month);
+            const allWeekResults = [];
+            
+            weeksToProcess.forEach(week => {
+                const weekForecasts = [];
+                
+                Object.entries(week.audiences).forEach(([audience, totalClients]) => {
+                    const monthData = seasonalityData[audience][week.month];
+                    if (!monthData) return;
+                    
+                    Object.entries(monthData).forEach(([subject, share]) => {
+                        if (share === 0) return;
+                        
+                        const clients = Math.round(totalClients * share);
+                        
+                        weekForecasts.push({
+                            Week: week.label,
+                            Audience: audience,
+                            Subject: subject,
+                            'Seasonal Share': share,
+                            'Forecast Clients': clients
+                        });
+                    });
+                });
+                
+                allWeekResults.push({
+                    label: week.label,
+                    month: week.month,
+                    inputData: week.audiences,
+                    forecasts: weekForecasts
+                });
+            });
+            
+            allForecasts = allWeekResults.flatMap(w => w.forecasts);
+            displayMultiWeekResults(allWeekResults);
         };
         
-        function displayBulkResults(month) {
+        function displayMultiWeekResults(allWeekResults) {
             document.getElementById('bulkResults').style.display = 'block';
             const container = document.getElementById('bulkResultsGrid');
             container.innerHTML = '';
             
-            const byAudience = {};
-            allForecasts.forEach(f => {
-                if (!byAudience[f.Audience]) byAudience[f.Audience] = [];
-                byAudience[f.Audience].push(f);
-            });
-            
             let grandTotalInput = 0;
             let grandTotalOutput = 0;
             
-            Object.keys(seasonalityData).forEach(audience => {
-                const inputId = `input-${audience.replace(/[^a-z0-9]/gi, '_')}`;
-                grandTotalInput += parseInt(document.getElementById(inputId).value) || 0;
+            allWeekResults.forEach(week => {
+                const weekInput = Object.values(week.inputData).reduce((sum, v) => sum + v, 0);
+                const weekOutput = week.forecasts.reduce((sum, f) => sum + f['Forecast Clients'], 0);
+                grandTotalInput += weekInput;
+                grandTotalOutput += weekOutput;
             });
             
-            grandTotalOutput = allForecasts.reduce((sum, f) => sum + f['Forecast Clients'], 0);
             const grandVariance = grandTotalOutput - grandTotalInput;
             const grandVariancePct = grandTotalInput > 0 ? ((grandVariance / grandTotalInput) * 100).toFixed(1) : '0.0';
             
-            const summaryCard = document.createElement('div');
-            summaryCard.style.cssText = 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 8px; margin-bottom: 2rem;';
-            summaryCard.innerHTML = '<h3 style="margin-bottom: 1rem; font-size: 1.5rem;">Overall Forecast Summary - ' + month + '</h3><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;"><div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 6px; text-align: center;"><div style="font-size: 2rem; font-weight: bold;">' + grandTotalInput.toLocaleString() + '</div><div style="opacity: 0.9; font-size: 0.9rem; margin-top: 0.5rem;">Total Input</div></div><div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 6px; text-align: center;"><div style="font-size: 2rem; font-weight: bold;">' + grandTotalOutput.toLocaleString() + '</div><div style="opacity: 0.9; font-size: 0.9rem; margin-top: 0.5rem;">Total Output</div></div><div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 6px; text-align: center;"><div style="font-size: 2rem; font-weight: bold;">' + (grandVariance >= 0 ? '+' : '') + grandVariance + '</div><div style="opacity: 0.9; font-size: 0.9rem; margin-top: 0.5rem;">Variance (' + grandVariancePct + '%)</div></div><div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 6px; text-align: center;"><div style="font-size: 2rem; font-weight: bold;">' + Object.keys(byAudience).length + '</div><div style="opacity: 0.9; font-size: 0.9rem; margin-top: 0.5rem;">Audiences</div></div></div>';
-            container.appendChild(summaryCard);
+            const overallSummary = document.createElement('div');
+            overallSummary.style.cssText = 'background: linear-gradient(135deg, #00BFA5 0%, #00ACC1 100%); color: white; padding: 2rem; border-radius: 8px; margin-bottom: 2rem;';
+            overallSummary.innerHTML = `
+                <h3 style="margin-bottom: 1rem; font-size: 1.5rem;">Overall Summary - ${allWeekResults.length} Week(s)</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 6px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold;">${grandTotalInput.toLocaleString()}</div>
+                        <div style="opacity: 0.9; font-size: 0.9rem; margin-top: 0.5rem;">Total Input</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 6px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold;">${grandTotalOutput.toLocaleString()}</div>
+                        <div style="opacity: 0.9; font-size: 0.9rem; margin-top: 0.5rem;">Total Output</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 6px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold;">${grandVariance >= 0 ? '+' : ''}${grandVariance}</div>
+                        <div style="opacity: 0.9; font-size: 0.9rem; margin-top: 0.5rem;">Variance (${grandVariancePct}%)</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 6px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold;">${allWeekResults.length}</div>
+                        <div style="opacity: 0.9; font-size: 0.9rem; margin-top: 0.5rem;">Weeks</div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(overallSummary);
             
-            const audienceOrder = [
-                'K-6', 'Learning Differences', 'HS-STEM', 'K12 Test Prep', 'Col-STEM',
-                'Grad Test Prep', 'Languages', 'Upskilling', 'Other', 
-                'Canada International', 'Prof Certs'
-            ];
-            
-            audienceOrder.forEach(audience => {
-                const forecasts = byAudience[audience];
-                if (!forecasts) return;
+            allWeekResults.forEach((weekResult, weekIndex) => {
+                const weekContainer = document.createElement('div');
+                weekContainer.style.cssText = 'border: 2px solid #00BFA5; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; background: #f8f9fa;';
                 
-                forecasts.sort((a, b) => b['Forecast Clients'] - a['Forecast Clients']);
-                
-                const total = forecasts.reduce((sum, f) => sum + f['Forecast Clients'], 0);
-                const inputId = `input-${audience.replace(/[^a-z0-9]/gi, '_')}`;
-                const inputTotal = parseInt(document.getElementById(inputId).value) || 0;
-                const variance = total - inputTotal;
-                const variancePct = inputTotal > 0 ? ((variance / inputTotal) * 100).toFixed(1) : '0.0';
-                const flag = audience === 'Canada International' ? '🇨🇦 ' : '';
-                
-                const card = document.createElement('div');
-                card.className = 'audience-result';
-                card.innerHTML = '<div class="audience-header"><div><div class="audience-name">' + flag + audience + '</div><div style="font-size: 0.9rem; color: #6c757d; margin-top: 0.25rem;">Input: ' + inputTotal + ' | Output: ' + total + ' | Variance: ' + (variance >= 0 ? '+' : '') + variance + ' (' + variancePct + '%)</div></div><div class="audience-total">' + total + ' clients</div></div><div class="subject-table" id="table-' + audience.replace(/[^a-z0-9]/gi, '_') + '"></div>';
-                container.appendChild(card);
-                
-                const table = document.getElementById('table-' + audience.replace(/[^a-z0-9]/gi, '_'));
-                
-                const withClients = forecasts.filter(f => f['Forecast Clients'] > 0);
-                const withoutClients = forecasts.filter(f => f['Forecast Clients'] === 0);
-                
-                withClients.forEach(f => {
-                    const row = document.createElement('div');
-                    row.className = 'subject-row';
-                    row.innerHTML = '<div class="subject-name">' + f.Subject + '</div><div class="subject-share">' + (f['Seasonal Share'] * 100).toFixed(2) + '%</div><div class="subject-forecast">' + f['Forecast Clients'] + '</div>';
-                    table.appendChild(row);
+                const byAudience = {};
+                weekResult.forecasts.forEach(f => {
+                    if (!byAudience[f.Audience]) byAudience[f.Audience] = [];
+                    byAudience[f.Audience].push(f);
                 });
                 
-                if (withoutClients.length > 0) {
-                    const row = document.createElement('div');
-                    row.style.cssText = 'padding: 1rem 0; color: #6c757d; font-style: italic; border-top: 2px solid #e9ecef; margin-top: 0.5rem;';
-                    row.textContent = withoutClients.length + ' additional subjects round to 0 clients';
-                    table.appendChild(row);
-                }
+                let weekTotalInput = Object.values(weekResult.inputData).reduce((sum, v) => sum + v, 0);
+                let weekTotalOutput = weekResult.forecasts.reduce((sum, f) => sum + f['Forecast Clients'], 0);
+                const weekVariance = weekTotalOutput - weekTotalInput;
+                const weekVariancePct = weekTotalInput > 0 ? ((weekVariance / weekTotalInput) * 100).toFixed(1) : '0.0';
+                
+                const weekHeader = document.createElement('div');
+                weekHeader.style.cssText = 'background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; cursor: pointer;';
+                weekHeader.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3 style="color: #00BFA5; font-size: 1.5rem; margin-bottom: 0.5rem;">
+                                <span id="week-arrow-${weekIndex}">▼</span> ${weekResult.label} - ${weekResult.month}
+                            </h3>
+                            <div style="color: #6c757d; font-size: 0.9rem;">
+                                Input: ${weekTotalInput.toLocaleString()} | Output: ${weekTotalOutput.toLocaleString()} | Variance: ${weekVariance >= 0 ? '+' : ''}${weekVariance} (${weekVariancePct}%)
+                            </div>
+                        </div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #00BFA5;">${weekTotalOutput.toLocaleString()}</div>
+                    </div>
+                `;
+                
+                const weekContent = document.createElement('div');
+                weekContent.id = `week-content-${weekIndex}`;
+                weekContent.style.display = 'block';
+                
+                audienceOrder.forEach(audience => {
+                    const forecasts = byAudience[audience];
+                    if (!forecasts) return;
+                    
+                    forecasts.sort((a, b) => b['Forecast Clients'] - a['Forecast Clients']);
+                    
+                    const total = forecasts.reduce((sum, f) => sum + f['Forecast Clients'], 0);
+                    const inputTotal = weekResult.inputData[audience] || 0;
+                    const variance = total - inputTotal;
+                    const variancePct = inputTotal > 0 ? ((variance / inputTotal) * 100).toFixed(1) : '0.0';
+                    const flag = audience === 'Canada International' ? '🇨🇦 ' : '';
+                    
+                    const card = document.createElement('div');
+                    card.className = 'audience-result';
+                    card.innerHTML = `
+                        <div class="audience-header">
+                            <div>
+                                <div class="audience-name">${flag}${audience}</div>
+                                <div style="font-size: 0.9rem; color: #6c757d; margin-top: 0.25rem;">
+                                    Input: ${inputTotal} | Output: ${total} | Variance: ${variance >= 0 ? '+' : ''}${variance} (${variancePct}%)
+                                </div>
+                            </div>
+                            <div class="audience-total">${total} clients</div>
+                        </div>
+                        <div class="subject-table" id="table-${weekIndex}-${audience.replace(/[^a-z0-9]/gi, '_')}"></div>
+                    `;
+                    weekContent.appendChild(card);
+                    
+                    setTimeout(() => {
+                        const table = document.getElementById(`table-${weekIndex}-${audience.replace(/[^a-z0-9]/gi, '_')}`);
+                        if (!table) return;
+                        
+                        const mainSubjects = forecasts.filter(f => f['Forecast Clients'] > 0);
+                        const otherSubjects = forecasts.filter(f => f['Forecast Clients'] === 0);
+                        
+                        mainSubjects.forEach(f => {
+                            const row = document.createElement('div');
+                            row.className = 'subject-row';
+                            row.innerHTML = `
+                                <div class="subject-name">${f.Subject}</div>
+                                <div class="subject-share">${(f['Seasonal Share'] * 100).toFixed(2)}%</div>
+                                <div class="subject-forecast">${f['Forecast Clients']}</div>
+                            `;
+                            table.appendChild(row);
+                        });
+                        
+                        if (otherSubjects.length > 0) {
+                            const totalOtherShare = otherSubjects.reduce((sum, f) => sum + f['Seasonal Share'], 0);
+                            const audienceId = `${weekIndex}-${audience.replace(/[^a-z0-9]/gi, '_')}`;
+                            
+                            const otherRow = document.createElement('div');
+                            otherRow.style.cssText = 'padding: 1rem 0; border-top: 2px solid #e9ecef; margin-top: 0.5rem; cursor: pointer;';
+                            otherRow.innerHTML = `
+                                <div class="subject-row" style="background: #f8f9fa; padding: 0.75rem; border-radius: 6px; align-items: center;">
+                                    <div class="subject-name" style="color: #6c757d; display: flex; align-items: center;">
+                                        <span style="margin-right: 0.5rem;">▶</span> Other Subjects (${otherSubjects.length})
+                                    </div>
+                                    <div class="subject-share" style="color: #6c757d;">${(totalOtherShare * 100).toFixed(2)}%</div>
+                                    <div class="subject-forecast" style="color: #6c757d;">0</div>
+                                </div>
+                                <div id="other-detail-${audienceId}" style="display: none; margin-top: 1rem; padding-left: 1rem; max-height: 400px; overflow-y: auto; background: #ffffff; border-left: 3px solid #dee2e6; padding: 1rem;"></div>
+                            `;
+                            
+                            otherRow.onclick = function() {
+                                const detail = document.getElementById(`other-detail-${audienceId}`);
+                                const arrow = this.querySelector('span');
+                                if (detail.style.display === 'none') {
+                                    detail.style.display = 'block';
+                                    arrow.textContent = '▼';
+                                    
+                                    if (detail.innerHTML === '') {
+                                        let detailHtml = '<div style="font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 600; color: #00BFA5;">Click any subject below to copy its name:</div>';
+                                        otherSubjects.sort((a, b) => b['Seasonal Share'] - a['Seasonal Share']).forEach(f => {
+                                            detailHtml += `<div class="subject-row" style="padding: 0.4rem; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#e9ecef'" onmouseout="this.style.background='transparent'" onclick="event.stopPropagation(); navigator.clipboard.writeText('${f.Subject.replace(/'/g, "\\'")}'); this.style.background='#d4edda'; setTimeout(() => this.style.background='transparent', 500);">
+                                                <div class="subject-name" style="font-size: 0.85rem;">${f.Subject}</div>
+                                                <div class="subject-share" style="font-size: 0.85rem;">${(f['Seasonal Share'] * 100).toFixed(2)}%</div>
+                                                <div class="subject-forecast" style="font-size: 0.85rem;">0</div>
+                                            </div>`;
+                                        });
+                                        detail.innerHTML = detailHtml;
+                                    }
+                                } else {
+                                    detail.style.display = 'none';
+                                    arrow.textContent = '▶';
+                                }
+                            };
+                            
+                            table.appendChild(otherRow);
+                        }
+                    }, 10);
+                });
+                
+                weekHeader.onclick = function() {
+                    const content = document.getElementById(`week-content-${weekIndex}`);
+                    const arrow = document.getElementById(`week-arrow-${weekIndex}`);
+                    if (content.style.display === 'none') {
+                        content.style.display = 'block';
+                        arrow.textContent = '▼';
+                    } else {
+                        content.style.display = 'none';
+                        arrow.textContent = '▶';
+                    }
+                };
+                
+                weekContainer.appendChild(weekHeader);
+                weekContainer.appendChild(weekContent);
+                container.appendChild(weekContainer);
             });
             
             document.getElementById('bulkResults').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
         
         window.downloadAllForecasts = function() {
-            const headers = ['Audience', 'Subject', 'Seasonal Share', 'Forecast Clients'];
-            const audienceOrder = [
-                'K-6', 'Learning Differences', 'HS-STEM', 'K12 Test Prep', 'Col-STEM',
-                'Grad Test Prep', 'Languages', 'Upskilling', 'Other', 
-                'Canada International', 'Prof Certs'
-            ];
+            const headers = ['Week', 'Audience', 'Subject', 'Seasonal Share', 'Forecast Clients'];
             
             const sortedForecasts = allForecasts.sort((a, b) => {
+                if (a.Week && b.Week && a.Week !== b.Week) {
+                    return a.Week.localeCompare(b.Week);
+                }
                 const aIndex = audienceOrder.indexOf(a.Audience);
                 const bIndex = audienceOrder.indexOf(b.Audience);
                 if (aIndex !== bIndex) return aIndex - bIndex;
@@ -570,7 +860,8 @@
             
             const rows = sortedForecasts.map(f => {
                 const shareFormatted = (f['Seasonal Share'] * 100).toFixed(2) + '%';
-                return [f.Audience, '"' + f.Subject + '"', shareFormatted, f['Forecast Clients']].join(',');
+                const week = f.Week || 'Single Week';
+                return [week, f.Audience, '"' + f.Subject + '"', shareFormatted, f['Forecast Clients']].join(',');
             });
             
             const csv = [headers.join(','), ...rows].join('\n');
@@ -579,7 +870,8 @@
             const a = document.createElement('a');
             a.href = url;
             const month = document.getElementById('bulkMonth').value;
-            a.download = 'All_Audiences_Subject_Forecast_' + month + '.csv';
+            const timestamp = new Date().toISOString().slice(0, 10);
+            a.download = `Subject_Forecast_${month}_${timestamp}.csv`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -587,9 +879,13 @@
         };
         
         window.resetBulk = function() {
-            document.querySelectorAll('.bulk-input-grid input').forEach(input => input.value = '');
+            clearCurrentInputs();
             document.getElementById('bulkMonth').value = '';
+            document.getElementById('weekLabel').value = '';
+            document.getElementById('pasteArea').value = '';
             document.getElementById('bulkResults').style.display = 'none';
+            weekQueue = [];
+            updateWeekQueueDisplay();
             allForecasts = [];
         };
         
